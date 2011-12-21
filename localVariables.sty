@@ -1,0 +1,327 @@
+%* Package Definition  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%** LaTeX version needed:
+\NeedsTeXFormat{LaTeX2e}
+%** Package provided:
+\ProvidesPackage{localVariables}
+\typeout{List of macros used in this paper.}
+
+%* Package dependancies:  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%** Fonts:
+\RequirePackage{amssymb}
+\RequirePackage{jeremy}
+
+
+%* Variables  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Terms used throughout the paper:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Variables
+%%%% Def of problems
+\def\nbobjects{\ensuremath{n}}
+\def\nbnodes{\ensuremath{n}}
+\def\nblabels{\ensuremath{\sigma}}
+\def\nbrels{\ensuremath{t}}
+\def\nbkeywords{\ensuremath{k}}
+\def\threshold{\ensuremath{t}}
+%\newcommand{\threshold}{\idtt{thres}}
+\def\difficulty{\ensuremath{\delta}}
+\def\recursivity{\ensuremath{\rho}}
+\def\lab{\alpha}
+\def\labelx{\alpha}
+\def\labely{\beta}
+\def\object{x}
+\def\objectx{x}
+\def\objecty{y}
+\def\nodex{x}
+\def\nodey{y}
+\def\nodez{z}
+\def\leftBound{z}
+\def\rank{r}
+%%%% Orders
+\def\DFUDS{\idtt{DFUDS}}
+\def\pre{\idtt{PRE}}
+\def\post{\idtt{POST}}
+%%%% For the proofs
+\def\COLUMNS{\idtt{COLUMNS}}
+\def\ROWDELIM{\idtt{ROWDELIM}}
+\def\ROWS{\idtt{ROWS}}
+\def\COLDELIM{\idtt{COLDELIM}}
+\def\LABELS{\idtt{LABELS}}
+\def\XLABELS{\idtt{XLABELS}}
+\def\NODES{\idtt{NODES}}
+\newcommand\tree{\ensuremath{T}}
+\def\ndalg{\idtt{NonDetAlg}}
+\def\alg{Algorithm~\ref{alg:mTreeExactMatch}}
+%%%% For the algorithms and operators
+\def\searched{s}
+\def\YES{\idtt{YES}}
+\def\Result{\idtt{R}}
+%%%% Encodings Names
+\def\accessEncoding{\idtt{access}}
+\def\selectEncoding{\idtt{select}}
+\def\labelEncoding{\idtt{label}}
+\def\objectEncoding{\idtt{object}}
+%% Results
+%%%%  log log sigma
+\def\llgl{\ensuremath{\lg\lg\nblabels}}
+\def\lllgl{\ensuremath{\lg\lg\nblabels\lg\lg\lg\nblabels}}
+\def\llgo{\ensuremath{\lg\lg\nbobjects}}
+\def\lllgo{\ensuremath{\lg\lg\nbobjects\lg\lg\lg\nbobjects}}
+%%%% For binary relations
+%%%%%% SPACE
+\def\mSequenceSpace{\ensuremath{          \nbrels  \left( \lg\nblabels   + o(\lg\nblabels)    \right)     }}
+\def\mSequenceSpaceBis{\ensuremath{       \nbrels  \left( \lg\nbobjects  + o(\lg\nbobjects)   \right)     }}
+\def\mSequenceSpaceTer{\ensuremath{    \nbrels   \big(1{+}\lg\min(\nblabels,\nbobjects)\big)+o(\nbrels)\lg\min(\nblabels,\nbobjects)}}
+\def\mSequenceSpaceLB{\ensuremath{          \nbrels  \left( \lg\nblabels   - o(\lg\nblabels)    \right)     }}
+%%%%%% TIME
+\def\mSequenceTime{\ensuremath{           \bigo(  \lg\lg\nblabels)                                 }}
+\def\mSequenceTimeBis{\ensuremath{        \bigo(  \lg\lg\nbobjects)                                }}
+\def\mSequenceRankTime{\ensuremath{       \bigo(  \lg\lg\nblabels \lg\lg\lg\nblabels)              }}
+\def\mSequenceRankTimeBis{\ensuremath{    \bigo(  \lg\lg\nbobjects \lg\lg\lg\nbobjects)            }}
+%%%% Ternary Relations
+\def\TerSpace{\ensuremath{              2\nbrels \left( \lg\nbobjects + o(\lg\nbobjects) + (1+\recursivity)+o(\recursivity\nblabels)  \right)            }} 
+\def\TerTime{\ensuremath{      \bigo(\lg\lg\nbobjects)}}
+%%%% For labeled trees
+%%%%%% space
+\def\lTreeSpace{\ensuremath{               \nbobjects \left( \lg\nblabels+ o(\lg\nblabels)  \right)      }}
+\def\lTreeSpaceLB{\ensuremath{             \nbobjects \left( \lg\nblabels- o(\lg\nblabels)  \right)       }}
+%%%%%% time
+\def\lTreeTime{\ensuremath{                \bigo(\lg\lg\nblabels)                                               }}
+\def\lTreeRankTime{\ensuremath{            \bigo(\lg\lg\nblabels\lg\lg\lg\nblabels)                             }}
+%%%% For multi-labeled trees
+%%%%%% space
+\def\mTreeSpace{\ensuremath{               \nbrels \left( \lg\nblabels + o(\lg\nblabels)  \right)            }}
+\def\mTreeSpaceLB{\ensuremath{             \nbrels \left( \lg\nblabels - o(\lg\nblabels)  \right)         }}
+%%%%%% time
+\def\mTreeTime{\ensuremath{               \bigo(\lg\lg\nblabels)}}
+\def\mTreeRankTime{\ensuremath{           \bigo(\lg\lg\nblabels\lg\lg\lg\nblabels)}}
+%%%% For pattern matching
+\def\mSequenceExactSearches{\ensuremath{  \bigo(\difficulty\nbkeywords)                                            }}
+\def\mSequenceExactTime{\ensuremath{      \bigo(\difficulty\nbkeywords\lg\lg\nblabels)                             }}
+\def\mTreeExactSearches{\ensuremath{      \bigo(\difficulty\nbkeywords)                                            }}
+\def\mTreeExactTime{\ensuremath{          \bigo(\difficulty\nbkeywords\lg\lg\nblabels)                             }}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%% OPERATORS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% On Strings
+%%%% Jacobson on binary Strings
+\def\BinRank{\idtt{bin\_rank}}
+\def\BinSelect{\idtt{bin\_select}}
+%%%% Golynski et al on larger alphabet
+\def\StrSpace{\ensuremath{          \nbobjects   \left( \lg\nblabels   + o(\lg\nblabels)     \right)     }}
+\def\StrTime{\ensuremath{               \bigo(\lg\lg\nblabels)}}
+\def\StrRank{\idtt{string\_rank}}
+\def\StrSelect{\idtt{string\_select}}
+\def\StrAccess{\idtt{string\_access}}
+\def\StrNB{\idtt{string\_nb}}
+%%%% For The proof of Th1
+\def\rselect{\idtt{row\_select}}
+\def\rrank{\idtt{row\_rank}}
+\def\cselect{\idtt{column\_select}}
+\def\crank{\idtt{column\_rank}}
+%%%% Our operators on multi-labeled sequences
+\def\LabRank{\idtt{label\_rank}}
+\def\LabSelect{\idtt{label\_select}}
+\def\LabAccess{\idtt{label\_access}}
+\def\LabNb{\idtt{label\_nb}}
+\def\ObjRank{\idtt{object\_rank}}
+\def\ObjSelect{\idtt{object\_select}}
+\def\ObjAccess{\idtt{object\_access}}
+\def\ObjNb{\idtt{object\_nb}}
+\def\TableAccess{\idtt{table\_access}}
+%% On Unlabeled Trees
+%%%% Munro and Raman~\cite{succinctRepresentationsOfBalancedParenthesis}
+\def\TrParent{\idtt{tree\_parent}}
+\def\TrDegree{\idtt{tree\_degree}}
+\def\TrNbChildren{\TrDegree}
+\def\TrNbDesc{\idtt{tree\_nbdesc}}
+%%%% Benoit et al. on unlabeled trees
+\def\TrChild{\idtt{tree\_child}}
+%%%% Geary et al on unlabeled trees
+\def\TrChildRank{\idtt{tree\_childrank}}
+\def\TrDepth{\idtt{tree\_depth}}
+\def\TrLevAnc{\idtt{tree\_leveled\_ancestor}}
+\def\TrRank{\idtt{tree\_rank}}
+\def\TrSelect{\idtt{tree\_select}}
+\def\TrChildRank{\idtt{tree\_child\_rank}}
+\def\TrDeg{\idtt{tree\_deg}}
+\def\TrNbDesc{\idtt{tree\_nbdesc}}
+%%%% The ones I added:
+\def\TrIsAnc{\idtt{tree\_isanc}}
+%%%% Sadakane
+\def\LCA{\idtt{LCA}}
+%% Labeled trees
+%\def\LabTreeAccess{\idtt{labeltree\_access}}
+%\def\LabTreeRank{\idtt{labeltree\_rank}}
+%\def\LabTreeSelect{\idtt{labeltree\_select}}
+\def\LabTreeAnc{\idtt{labeltree\_anc}}
+\def\LabTreeDesc{\idtt{labeltree\_desc}}
+\def\LabTreeParent{\idtt{labeltree\_parent}}
+\def\LabTreeChild{\idtt{labeltree\_child}}
+\def\LabTreeNbDesc{\idtt{labeltree\_nbdesc}}
+\def\LabTreeNbChildren{\idtt{labeltree\_nbchildren}}
+\def\LabTreeSpace{\ensuremath{          \nbobjects   \left( \lg\nblabels   + o(\lg\nblabels)     \right)     }}
+\def\LabTreeTime{\ensuremath{               \bigo(\lg\lg\nblabels)}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\bLabTreeAnc{\idtt{bounded\_labeltree\_anc}}
+\def\bLabTreeDesc{\idtt{bounded\_labeltree\_desc}}
+\def\bLabTreeParent{\idtt{bounded\_labeltree\_parent}}
+\def\bLabTreeChild{\idtt{bounded\_labeltree\_child}}
+\def\bLabTreeNbDesc{\idtt{bounded\_labeltree\_nbdesc}}
+\def\bLabTreeNbChildren{\idtt{bounded\_labeltree\_nbchildren}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\firstOnBranch}[1]{#1_*}
+\newcommand{\notFirstOnBranch}[1]{#1^+_*}
+\newcommand{\lastOnBranch}[1]{#1^*}
+\newcommand{\middleOnBranch}[1]{#1^+_+}
+\newcommand{\aloneOnBranch}[1]{#1}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For the Adaptive Algorithm
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\ContextQueryTime{\ensuremath{\bigo(\difficulty\nbkeywords\lg\lg\nblabels)}}
+\def\ContextQueryNbOperatorCalls{\ensuremath{\bigo(\difficulty\nbkeywords)}}
+\def\tour{\idtt{tour}}
+\def\dist{\idtt{dist}}
+\def\target{\idtt{target}}
+
+% ** XPath axis
+\def\parentAxis{\idtt{parent}}
+\def\childAxis{\idtt{child}}
+\def\ancestorAxis{\idtt{ancestor}}
+\def\descendantAxis{\idtt{descendant}}
+\def\followingAxis{\idtt{following}}
+\def\precedingAxis{\idtt{preceding}}
+\def\folllowingSiblingAxis{\idtt{following\_sibling}}
+\def\precedingSiblingAxis{\idtt{preceding\_sibling}}
+
+
+
+\def\setNO{\idtt{NO}}
+\def\setYES{\idtt{YES}}
+\def\setMAYBE{\idtt{MAYBE}}
+\def\Q{\ensuremath{Q}}
+\def\R{\ensuremath{R}}
+\def\maxWeightQ{\ensuremath{\mu_{_{Q}}}}
+\def\maxWeightR{\ensuremath{\mu_{_{R}}}}
+\def\score{\idtt{score}}
+\newcommand{\scoremin}{\idtt{score\_min}}
+\newcommand{\scoremax}{\idtt{score\_max}}
+\def\pertinentScore{\idtt{pertinent\_score}}
+
+\def\successor{\idtt{label{\_}successor}}
+\def\predecessor{\idtt{label{\_}predecessor}}
+\def\ssuccessor{\idtt{label{\_}ssuccessor}}
+\def\spredecessor{\idtt{label{\_}spredecessor}}
+
+\def\ancestor{\idtt{ancestor}}
+
+
+\newcommand\pathscore{\idtt{path\_score}}
+\newcommand\pertinentPathScore{\idtt{pertinent\_path\_score}}
+\newcommand\ThresholdSetTree{\idtt{ThresTree}}
+\newcommand\ancestors{\idtt{ancestors}}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% llncs.cls emulation by Aleh
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+{\theorembodyfont{\upshape} \newtheorem{proof}{Proof}}
+\newcommand\squareforqed{\hbox{\rlap{$\sqcap$}$\sqcup$}}
+\newcommand\qed{\squareforqed}
+
+\newcommand\ThresholdSet{\idtt{Thres}}
+\newcommand\PertinentSet{\idtt{Pert}}
+
+\newcommand\curobject{\ensuremath{x}}
+\newcommand\totalweight{\ensuremath{w}}
+
+\newcommand\tinyskip{\vspace{0.1in}}
+\newcommand\mediumskip{\vspace{0.3in}}
+\newcommand\largeskip{\vspace{0.5in}}
+
+\newcommand\T{\ensuremath{T}}
+
+\newcommand\weight{\idtt{WEIGHT}}
+\newcommand\weightOPT{\weight^{\idtt{OPT}}}
+
+\newcommand\oset{A}
+\newcommand\osetsize{n}
+\newcommand\probinst{X}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Global Definitions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand\func{f}
+\newcommand\probsize{n}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Terms used throughout the paper:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Variables
+%%%% Def of problems
+\def\nbobjects{n}
+\def\nbedges{k}
+\def\nblabels{\sigma}
+\def\recursivity{\rho}
+\def\difficulty{\delta}
+%%%% For the algorithm
+\def\dist{\idtt{dist}}
+\def\tour{\idtt{tour}}
+\def\yes{\idtt{yes}}
+\def\no{\idtt{no}}
+\def\child{\idtt{child}}
+\def\desc{\idtt{descendant}}
+\def\descendant{\desc}
+\def\parent{\idtt{parent}}
+\def\ancestor{\idtt{ancestor}}
+\def\following{\idtt{following}}
+\def\fits#1#2#3{{#1 \stackrel{#2}{\rightarrow} #3}}
+\def\estDescendantDe{\subset}
+\def\estAncetreDe{\superset}
+\def\estPredecesseurDe{{\hat{\ }}}
+\def\estPreorderPredecesseurDe{<}
+\def\estPreorderSuccesseurDe{>}
+%%%% For XPath
+\def\element{\idtt{element}}
+\def\attribute{\idtt{attribute}}
+\def\text{\idtt{text}}
+%%%% For the Example
+\def\prescription{\idtt{prescription}}
+\def\patient{\idtt{patient}}
+\def\medicine{\idtt{medicine}}
+\def\test{\idtt{test}}
+\def\result{\idtt{result}}
+\def\medfile{\idtt{medfile}}
+\def\history{\idtt{history}}
+%\def\{\idtt{}}
+
+
+\def\TrLCA{\idtt{OLCA}}
+\def\LCA{\idtt{LCA}}
+\def\SLCA{\idtt{SLCA}}
+
+\def\LCASET{\idtt{LLCA}}
+\def\MLCASET{\idtt{MLCA}}
+\def\MLCASSET{\idtt{MLCAS}}
+\def\SLCASET{\idtt{SLCA}}
+\def\ALCASET{\idtt{ASLCA}}
+
+\def\TLLCA{\idtt{TLLCA}}
+\def\PLLCA{\idtt{PLLCA}}

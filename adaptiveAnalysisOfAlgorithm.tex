@@ -1,0 +1,67 @@
+\documentclass[12pt]{book}
+
+\usepackage{jeremy}
+\usepackage{localVariables}
+\usepackage{fullpage}
+\usepackage{tocbibind} % To get the Appendix mentioned in your table of contents
+\usepackage{graphicx} % For the command \includegraphics
+\usepackage{url} % To include urls
+\usepackage{tree-dvips} % To draw arrows
+\usepackage{qtree} \qtreecenterfalse  % To draw trees.
+
+\usepackage[ruled]{homework}
+\usepackage[ruled]{openproblem}
+\usepackage[boxed]{adaptiveanalysis}
+
+
+
+
+%\usepackage[activeospeccharacters,noamsthm,envcountsect]{beamerarticle}
+
+\usepackage{hanoi}
+
+\usepackage[existSolution]{problem}
+
+%\usepackage{doublespace}
+%\doublespace
+\makeindex\makeglossary
+
+%\includeonly{adaptiveSorting,biblio}
+%\includeonly{parameterizedComplexity}
+
+
+\includeversion{LONG}\excludeversion{SHORT}
+\includeversion{PROOF}
+\includeversion{EXAMPLE}
+\excludeversion{DISTRIBUTIONSENSITIVE}
+%\excludeversion{solution}
+\includeversion{example}
+\markversion{NOTE}
+
+
+\begin{document}
+
+
+
+\include{title}
+\include{introduction}
+\include{hanoi}
+\include{adaptiveSearching}
+\include{adaptiveSorting}
+\include{convexHull} 
+\include{adaptiveSetOperations} 
+\include{adaptivePatternMatching} 
+\include{onlineAlgorithms}
+\include{parameterizedComplexity}
+%
+\include{instanceOptimality}
+\include{smoothedAnalysis}
+
+
+\include{conclusion} %% Conclusion and Perspectives
+%
+\include{appendices} %% Table of figures, list of tables and index.
+\include{biblio}     %% BIBLIO 
+
+\end{document}
+

@@ -1,0 +1,384 @@
+%%
+%% adaptiveSorting.tex
+%% 
+%% Made by Jeremy Barbay
+%% Login   <jbarbay@condorito>
+%% 
+%% Started on  Fri Mar 21 15:54:07 2008 Jeremy Barbay
+%% Last update Fri Mar 21 15:54:07 2008 Jeremy Barbay
+%%
+
+\chapter{Sorting}
+\label{cha:adapt-analys-sort}
+
+
+
+\section{In the Worst Case}
+\label{sec:worst-case}
+
+\subsection{Classical Algorithms}
+\label{sec:classical-algorithms}
+
+
+\begin{interaction}
+  What sorting algorithm do you know? What is their ``complexity''?
+  What type of complexity are we talking about?
+\end{interaction}
+
+There are many sorting algorithms in the comparison model, which can
+be classified in two broad classes by their worst case complexity over
+instances of size $n$: those in $\bigo(n\lg n)$, and those in
+$\bigo(n^2)$.
+
+\begin{itemize}
+\item insertion sort $\bigo(n^2)$
+\item quicksort $\bigo(n^2)$
+\item bubblesort $\bigo(n^2)$
+\item heapsort $\bigo(n\lg n)$
+\item selection sort $\bigo(n\lg n)$
+\item (...)
+\end{itemize}
+
+\begin{interaction} 
+  Why can't we improve the worst case complexity (in the
+  comparison model)? How do you prove a lower bound?
+\end{interaction}
+
+
+The complexity of $\bigo(n\lg n)$ is optimal in the comparison model,
+as it is easy to prove a lower bound of $\Omega(n\lg n)$ on the depth
+of any decision tree sorting arrays of size $n$.
+
+
+\begin{interaction}
+  Does it mean that all $\bigo(n\lg n)$ sorting algorithms are
+  equivalent in practice? Then what makes them different?
+\end{interaction}
+
+But even on a topic as old and mature as sorting, there is a first gap
+between theory and practice: while the algorithms whose worst case
+complexity over instances of size $n$ is $\bigo(n\lg n)$ are
+theoretically better, in practice they don't perform equivalently, and
+for some applications algorithms with a larger worst case complexity
+are performing better.
+
+
+\begin{interaction}
+  Which sorting algorithm you know is ``adaptive'', in the sense that
+  it has a great variation of complexity, from ``easy'' instances to
+  ``hard instances''?
+\end{interaction}
+
+
+Presortedness can be used in sorting, in particular fpr the following
+measures of order on an input $X$ to be sorted:
+
+\begin{itemize}
+
+\item \emph{Inversions}, the number of pairs in the wrong order,
+  defined more formally as
+$$\Inv(X)=|{(i,j) | 1\leq i<j\leq n, x_i>x_j}|,$$
+was used as a measure of presortedness by Mehlhorn~\cite{mehlhorn} and
+Guibas~\etal~\cite{guibas}.
+
+\item \emph{Runs}, the number of ascending substrings of $X$
+  defined more formally as
+  $$\Runs(X)=|{i | 1\leq i\leq n, x_{i+1}>x_i}|,$$
+  was used as a measure of presortedness by
+  Knuth~\cite{theArtOfComputerProgrammingVol3}.
+
+\item \emph{REM}, the number of elements which have to be romved from
+  $X$ to leave a sorted list, the complement of the length of the
+  longest ascending subsequence of $X$,
+  defined more formally as
+  $$\rem(X)= n-\max \{t | \exists 1\leq i_1<\ldots<i_t\leq n | x_{i_1} < x_{i_t} \},$$
+  was used as a measure of presortedness in an empirical study by Cook
+  and Kim~\cite{cook}, and more theoretically by
+  Mannila~\cite{measuresOfPresortednessAndOptimalSortingAlgorithms}.
+
+\item \emph{EXC}, the smallest number of exchanges of arbitrary
+  elements needed to bring $X$ into ascending order, ,
+  defined more formally as
+  $$\exc(X)= n-\mbox{number of cycles in the permutation of $\{1,\ldots,n\}$ corresponding to $X$.},$$
+
+\end{itemize}
+
+
+
+\subsection{Insertion Sorts}
+\label{sec:insertion-sorts}
+
+
+
+\subsubsection{Straight Insertion Sort}
+\label{sec:stra-insert-sort}
+
+The straight insertion sort consists to update the left part of the
+subarray by inserting in it each new element in linear time. 
+%
+The overall complexity is $\bigo(n^2)$ comparisons, but it is analyzed
+in a finer way by counting the number of inversions $\idtt{Inv}(X)$,
+defined as follow:
+
+$$\idtt{Inv}(X)=\#\{(i,j), i<j, X_i > X_j\}$$
+
+It is straightforward to see that the complexity of straight insertion
+sort is exactly $\idtt{Inv}(X)$, which is $\bigo(n^2)$.
+
+\subsubsection{Local Insertion Sort}
+\label{sec:local-insertion-sort}
+
+See Estivil-Castro and Wood's survey~\cite[page
+5,6]{estivillcastro92survey} or the original paper by
+Mannila~\cite{measuresOfPresortednessAndOptimalSortingAlgorithms} for
+the analysis of Local Insertion sort using a Dynamic Finger Search
+Tree, called a ``level-linked balanced
+$(a,b)$-tree''~\cite{designAndAnalysisOfADataStructureForRepresentingSortedLists},
+or any similar technique allowing to maintain a dictionary while
+supporting local
+searches~\cite{aNewRepresentationForLinearLists,fingerSearchTreesWithConstantInsertionTime,distancesAndFingerSearchInRandomBinarySearchTrees,spaceEfficientFingerSearchOnDegreeBalancedSearchTrees}.
+
+\begin{adaptiveanalysis}[e]
+  \begin{tabular}{@{\bf}p{.25\textwidth}p{.75\textwidth}}
+    Problem            & {\tt Sorting Permutations}\\               
+    Classical Approach & With {\tt Heapsort}, with $\bigo(n\log n)$ comparisons and space $\bigo(1)$. \\
+    Easy Instances     & For {\tt Straight Insertion sort}, from $n$ to $n(n-1)/2$ comparisons.\\
+    Difficulty Measure & $\idtt{Inv}(X)=\#\{(i,j), i<j, X_i > X_j\}$\\
+    Adaptive Analysis  & {\tt Straight Insertion sort} performs $\bigo( n + \idtt{Inv}(X) ) $ \\
+    New Algorithm      & {\tt Local Insertion sort} performs $\bigo( n ( 1 + \lg( \idtt{Inv}(X) / n ) ) )$ comparisons 
+    and uses $\bigo(n)$ space with a dynamic finger search tree. \\
+    Lower Bound        & $\Omega( n ( 1 + \lg( \idtt{Inv}(X) / n ) ) )$ comparisons are required. \\
+  \end{tabular}
+  \caption{Worst Case Adaptive Analysis of Permutation Sorting with
+    Comparisons}
+  \label{tab:permutationSortingWorstCase}
+\end{adaptiveanalysis}
+
+
+\subsection{Partition Sorts}
+\label{sec:partition-sorts}
+
+\subsubsection{Merge Sort}
+\label{sec:merge-sort}
+
+Another traditional algorithm is merge sort.
+%
+This algorithm is based on a simple linear procedure to merge two
+already sorted arrays.
+%
+As each subarray of size one is already sorted, it is clear that in
+$\lg n$ merging phases taking linear time each, the whole array can be
+sorted in time $\bigo(n\lg n)$.
+
+\subsubsection{Runs Sort}
+\label{sec:runs-sort}
+
+Yet, if some subarrays of larger size are known to be sorted, the
+merge sort algorithm can go faster.
+%
+For instance, checking in linear time for \emph{down-step} positions
+in the array, where an element is followed by a smaller one,
+partitions the original arrays in ascending runs which are already
+sorted.
+
+\begin{definition}
+  A \emph{down step} of a permutation $\pi$ over $[n]$ is a position $i$ 
+  such that $\pi(i+1)<\pi(i)$.  
+  % 
+  A \emph{run} in a permutation $\pi$ is a maximal range of
+  consecutive positions $\{i,\ldots,j\}$ which does not contain any
+  down step.
+  % 
+  Let $d_1,d_2, \ldots,d_k$ be the list of consecutive down steps in $\pi$.
+  Then the number of maximal runs of $\pi$ is noted $\nRuns = k+1$, 
+  and the sequence of the lengths of the maximal runs is noted
+  $\Runs = \langle d_1,d_2-d_1, \ldots,d_k-d_{k-1},n+1-d_k \rangle$.
+\end{definition}
+
+\begin{definition}
+  The {\em entropy} of a sequence of integers $X=\langle n_1,n_2,
+  \ldots, n_\nRuns\rangle$ adding up to $n$ is $H(X) =
+  \sum_{i=1}^\nRuns\frac{n_i}{n} \lg \frac{n}{n_i}$.
+  % 
+  By the convexity of logarithm we have $H(X) \le \lg \nRuns$ and
+  $H(X) \ge \frac{(\nRuns-1)(1/\ln 2 + \lg n)}{n}$.
+  % (r-1)lg n + (n-r+1)lg n/(n-r+1)
+  % (n-r+1)lg (1+(r-1)/(n-r+1))
+  % (r-1)/ln 2
+\label{def:entrop}
+\end{definition}
+
+\begin{theorem}
+  There is an algorithm performing at most $n(2+H(\Runs))(1+o(1)) +
+  \bigo(\nRuns\log n)$ comparison to sort a permutation $\pi$ over
+  $[n]$ with a set $\Runs$ of $\nRuns$ maximal run lengths.
+\end{theorem}
+
+Obviously, the same concept can be applied to other partitioning of
+the original array, such as alternating sequences of ascending and
+descending runs, or mixes of ascending and alternating runs.
+
+\subsubsection{Shuffled Monotone Subsequences  sort}
+\label{sec:sms-sort}
+
+A more complicated parititioning scheme is based on \emph{Shuffled
+  Monotone Subsequences} (SMS), considering subsequences of
+non-necessarily consecutive positions in the array.
+
+\begin{definition}
+  A \emph{Shuffled Monotone Subsequence} (resp. a \emph{Strict
+    Shuffled Monotone Subsequence}) of a permutation $\pi$ over $[n]$
+  is a subsequence $\{i,\ldots,j\}$ of positions forming a run
+  (resp. strict run).
+  % 
+  The number of maximal shuffled monotone subsequences of $\pi$ is
+  noted $\nSMS$ (resp. $\nSSMS$), and the sequence of the lengths of
+  the maximal shuffled monotone subsequences is noted $\SMS$
+  (resp. $\SSMS$)
+\end{definition}
+
+Shuffled monotone subsequences capture more of the structure in the
+permutation, at the cost of a more costly precomputing step:
+\begin{lemma}
+  Given a permutation $\pi$ over $[n]$ with $\nSMS$ maximal shuffled
+  monotone subsequences, there is an algorithm finding one set $\SMS$
+  (among the potentially many maximal ones) of $\nSMS$ maximal
+  shuffled monotone subsequences in time $\bigo(n\lg(\nSMS+1))$.
+\end{lemma}
+
+\begin{theorem}
+  There is an algorithm performing at most $n
+  \lceil\lg\nSMS\rceil(1+o(1)) +O(\log n)$ comparison to sort a
+  permutation $\pi$ over $[n]$ with a set of $\nSMS$ maximal shuffled
+  monotone subsequences.  
+\end{theorem}
+
+
+\subsubsection{Removals}
+\label{sec:removals}
+
+Mannila~\cite{measuresOfPresortednessAndOptimalSortingAlgorithms}
+
+\subsubsection{Other Measures of Difficulty}
+\label{sec:other-meas-diff}
+
+We described here only a representative selection of the three main
+types of adaptive sorting algorithms.
+%
+See Estivil-Castro and Wood's survey~\cite{estivillcastro92survey} for
+the description of the other difficulty measures and corresponding
+adaptive algorithms.
+
+
+
+
+\subsection{Adaptive Lower Bound}
+\label{sec:adaptive-lower-bound}
+
+
+\subsection{Reductions Between Analysises}
+\label{sec:reduct-betw-analys}
+
+
+Comparisons and reductions between difficulty measures, graph of
+reductions.
+
+See Manilla's paper.
+
+
+
+
+
+
+
+
+\section{In the Average Case}
+\label{sec:other-types-adaptive}
+
+\subsection{Average Case and Adaptive Randomized Algorithm}
+\label{sec:aver-case-adapt}
+
+\subsection{Random Local Insertion}
+\label{sec:rand-local-insert}
+
+
+
+\begin{adaptiveanalysis}[e]
+  \begin{tabular}{@{\bf}p{.25\textwidth}p{.75\textwidth}}
+    Problem            & {\tt Randomized Sorting Permutations}\\               
+    Classical Approach & With {\tt Heapsort}, with $\bigo(n\log n)$ comparisons and space $\bigo(1)$. \\
+    Easy Instances     & .\\
+    Difficulty Measure & $\idtt{Inv}(X)=\#\{(i,j), i<j, X_i > X_j\}$\\
+    Adaptive Analysis  & {\tt Straight Insertion sort} performs $\bigo( n + \idtt{Inv}(X) ) $ \\
+    New Algorithm      & {\tt Skip sort} performs $\bigo( n ( 1 + \lg( \idtt{Inv}(X) / n ) ) )$ comparisons 
+    and uses $\bigo(n)$ space with a randomized skip list. \\
+    Lower Bound        & $\Omega( n ( 1 + \lg( \idtt{Inv}(X) / n ) ) )$ comparisons are required. \\
+  \end{tabular}
+  \caption{On Average Adaptive Analysis of Permutation Sorting with
+    Comparisons}
+  \label{tab:permutationSortingRandomized}
+\end{adaptiveanalysis}
+
+
+\section{Perspectives}
+\label{sec:perspectives}
+
+The adaptive analysis of sorting in the comparison model is one of the
+domain where the adaptive analysis are the most complete. It
+illustrates the possibility of various difficulty measures, adaptive
+lower bound, reductions between difficulty measures. It can be a model
+for the adaptive analysis of other problems.
+
+Estivil-Castro and Wood~\cite{estivillcastro92survey} also mention
+adaptive analysis over {\em distributions} and in other models, such
+as in external memory. 
+%
+Those fields are less mature, and a source of
+open problems. 
+%
+All those results are still in the comparison model.
+
+\begin{homework}[e]
+\caption{Reading on Adaptive Sorting.}
+  Read Estivil-Castro and Wood's survey~\cite{estivillcastro92survey}.
+\end{homework}
+
+\begin{homework}[e]
+\caption{Adaptive Analysis of BucketSort. \label{hmw:bucketSort}}
+  Consider bucket-sort, an algorithm which is not in the comparison
+  algorithm. Give a difficulty measure and an adaptive analysis of its
+  complexity.
+  \begin{solution}
+    Difficulty measures would be the (known in advance) size of the
+    domain of values, and the maximum number of elements with the same
+    value.
+  \end{solution}
+\end{homework}
+
+\begin{openproblem}
+\caption{Adaptive Analysis of value-based algorithms.\label{opb:valueBasedSorting}}
+  Is there a difficulty measure and a corresponding adaptive analysis
+  for sorting algorithms which are based on the values of the
+  elements?
+\end{openproblem}
+
+Sorting Multisets is often easier than sorting partition, and
+Kirkpatrick and Seidel~\cite{kirkpatrick} showed how sorting multisets
+is equivalent to computing the convex hull of a set of planar points:
+we describe the work on convex hulls in the next chapter.
+
+
+
+\section{Homeworks}
+\label{sec:homeworks}
+
+
+\inputProblem{./}{multisetInvSorting01.pbtex}{3 marks}
+\inputProblem{./}{countingSort01.pbtex}{6 marks}
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "adaptiveAnalysisOfAlgorithm"
+%%% End: 

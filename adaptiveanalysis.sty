@@ -1,0 +1,96 @@
+% ADAPTIVEANALYSIS STYLE -- Released XXX
+%    for LaTeX-2e
+% Copyright -- 
+%
+% 
+%
+% This style file is free software; you can redistribute it and/or
+% modify it under the terms of the GNU Lesser General Public
+% License as published by the Free Software Foundation; either
+% version 2 of the License, or (at your option) any later version.
+%
+% This style file is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+% Lesser General Public License for more details.
+%
+% You should have received a copy of the GNU Lesser General Public
+% License along with this style file; if not, write to the
+% Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+% Boston, MA  02111-1307, USA.
+%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{adaptiveanalysis}
+\typeout{Document Style `adaptiveanalysis' - floating environment}
+
+\RequirePackage{float}
+\RequirePackage{ifthen}
+\newcommand{\ADA@within}{nothing}
+\newboolean{ADA@within}
+\setboolean{ADA@within}{false}
+\newcommand{\ADA@floatstyle}{ruled}
+\newcommand{\ADA@name}{Adaptive Analysis}
+\newcommand{\listadaptiveanalysisname}{List of Adaptive Analysis}
+
+% Declare Options
+% first appearance
+\DeclareOption{plain}{
+  \renewcommand{\ADA@floatstyle}{plain}
+}
+\DeclareOption{ruled}{
+  \renewcommand{\ADA@floatstyle}{ruled}
+}
+\DeclareOption{boxed}{
+  \renewcommand{\ADA@floatstyle}{boxed}
+}
+% then numbering convention
+\DeclareOption{part}{
+  \renewcommand{\ADA@within}{part}
+  \setboolean{ADA@within}{true}
+}
+\DeclareOption{chapter}{
+  \renewcommand{\ADA@within}{chapter}
+  \setboolean{ADA@within}{true}
+}
+\DeclareOption{section}{
+  \renewcommand{\ADA@within}{section}
+  \setboolean{ADA@within}{true}
+}
+\DeclareOption{subsection}{
+  \renewcommand{\ADA@within}{subsection}
+  \setboolean{ADA@within}{true}
+}
+\DeclareOption{subsubsection}{
+  \renewcommand{\ADA@within}{subsubsection}
+  \setboolean{ADA@within}{true}
+}
+\DeclareOption{nothing}{
+  \renewcommand{\ADA@within}{nothing}
+  \setboolean{ADA@within}{true}
+}
+\DeclareOption*{\edef\ADA@name{\CurrentOption}}
+
+% ADAPTIVEANALYSIS
+%
+\ProcessOptions
+\floatstyle{\ADA@floatstyle}
+\ifthenelse{\boolean{ADA@within}}{
+  \ifthenelse{\equal{\ADA@within}{part}}
+     {\newfloat{adaptiveanalysis}{htbp}{loaa}[part]}{}
+  \ifthenelse{\equal{\ADA@within}{chapter}}
+     {\newfloat{adaptiveanalysis}{htbp}{loaa}[chapter]}{}
+  \ifthenelse{\equal{\ADA@within}{section}}
+     {\newfloat{adaptiveanalysis}{htbp}{loaa}[section]}{}
+  \ifthenelse{\equal{\ADA@within}{subsection}}
+     {\newfloat{adaptiveanalysis}{htbp}{loaa}[subsection]}{}
+  \ifthenelse{\equal{\ADA@within}{subsubsection}}
+     {\newfloat{adaptiveanalysis}{htbp}{loaa}[subsubsection]}{}
+  \ifthenelse{\equal{\ADA@within}{nothing}}
+     {\newfloat{adaptiveanalysis}{htbp}{loaa}}{}
+}{
+  \newfloat{adaptiveanalysis}{htbp}{loaa}
+}
+\floatname{adaptiveanalysis}{\ADA@name}
+
+\newcommand{\listofadaptiveanalysiss}{\listof{adaptiveanalysis}{\listadaptiveanalysisname}}
+

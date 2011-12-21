@@ -1,0 +1,125 @@
+%%
+%% parameterizedComplexity.tex
+%% 
+%% Made by Jeremy Barbay
+%% Login   <jbarbay@condorito>
+%% 
+%% Started on  Tue May  6 19:33:59 2008 Jeremy Barbay
+%% Last update Tue May  6 19:33:59 2008 Jeremy Barbay
+%%
+
+\chapter{Parameterized Complexity}
+\label{cha:param-compl}
+
+
+
+\section{NP}
+\label{sec:np}
+
+Reminder from previous courses
+
+
+NP-Hard problems known by students:
+\begin{itemize}
+\item SAT, 3SAT
+
+\item Vertex Cover Problem
+
+\item (...)
+
+\end{itemize}
+
+
+
+We will use the Vertex Cover problem to illustrate the concepts of
+this chapter.
+
+\begin{definition}
+  A \emph{vertex cover} for an undirected graph $G = (V,E)$ is a
+  subset $S$ of its vertices such that each edge has at least one
+  endpoint in $S$. 
+%
+  In other words, for each edge $(a,b)$ in $E$, one of $a$ or $b$ must
+  be an element of $S$.
+\end{definition}
+
+\begin{definition}
+The \emph{vertex cover problem} is the optimization problem of finding a vertex cover of size k in a given graph.
+\begin{itemize}
+\item INSTANCE: Graph G.
+\item OUTPUT: Smallest number k such that there is a vertex cover S for G of size k.
+\end{itemize}
+
+Equivalently, the problem can be stated as a decision problem:
+\begin{itemize}
+\item INSTANCE: Graph G and positive integer k.
+\item QUESTION: Is there a vertex cover S for G of size at most k?
+\end{itemize}
+  
+\end{definition}
+
+\section{Multiple Input Parameters}
+\label{sec:mult-input-param}
+
+Even at the time of the definition of NP hard problems, it was known
+that some very large instances of NP hard problems were still easy to
+solve, and that those might be the one occuring in practice (that's
+why Levin~\cite{levin} defined reductions on Average).
+
+
+
+Parameterized Complexity characterizes the ``easier'' instances by
+some parameters, which can help the algorithm to solve faster
+
+
+
+
+
+
+\section{Perspective}
+\label{sec:perspective-parameterized-complexity}
+
+Alex Lopez-Ortiz says that some people working in the domain of
+parameterized complexity have considered polynomial problems.
+%
+It is important to note that parameterized complexity, when applied to
+problems which can be solved in polynomial worst case complexity in
+the size of the input, is exactly adaptive analysis:
+\begin{itemize}
+\item The fact that in Parameterized Complexity the parameters are
+  \emph{given} to the algorithm while traditionaly the difficulty of
+  the instance is not given to an adaptive algorithm is \emph{not} a
+  relevant difference of approach between parameterized complexity and
+  adaptive algorithms: as long as the complexity of an algorithm is
+  exponential in some parameter $k$, it does not matter if this
+  parameter is given or not because it can be guessed at the mere cost
+  of a constant factor in the complexity
+  ($1+2+4+8+16+\ldots+2^k=2^{k+1}-1$).
+%
+  \begin{NOTE}
+    This sounds obvious but I had to convince Jonathan Buss of it. As
+    he is one of the figure of parameterized complexity, I guess it is
+    worth mentionning...
+  \end{NOTE}
+
+\item Similarly, the fact that Parameterized Complexity uses reduction
+  as opposed to lower bound is not a difference in definition of
+  technique, but simply a difference in application: for problems in
+  $P$ one can prove lower bound while for problems in $NP$ one proves
+  reductions, parameterized or not.
+
+\end{itemize}
+
+
+On the other hand, I found the notation and formalism of reductions
+defined in the field parameterized complexity very usefull to consider
+reductions between polynomial problems, \emph{along with their
+  difficulty measure}.
+
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "adaptiveAnalysisOfAlgorithm"
+%%% End: 

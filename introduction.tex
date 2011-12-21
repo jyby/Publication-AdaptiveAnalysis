@@ -1,0 +1,287 @@
+\chapter{Introduction}
+\label{chap:introduction}
+
+
+The performance of the first algorithms developped was naturally
+measured by the time performed by each algorithm on various instances
+which occured in the past.
+%
+\begin{LONG}
+  Those times were used as a prediction of the time that the algorithm
+  would spend on future instances.
+\end{LONG}
+%
+As performances on previous instances proved to be very poor
+predictors of futur performances researchers started to use
+mathematics to analyze the performance of algorithms \emph{without
+  running them}, such as on virtual instances chosen among all
+instances of fixed size $n$.
+%
+\begin{LONG}
+  This approach forms the fondation of the whole field of Theoretical
+  Computer Science, and a base for the development of any algorithm in
+  the field of Computer Science.
+\end{LONG}
+%
+A third revolution is currently occuring, as the performance analysis
+based on virtual instances of fixed size proved to be a poor predictor
+of algorithm's efficiency for the search in always larger databases
+(e.g. conjonctive queries~\cite{dlm}), with hardware getting more and
+more sophisticated (e.g. cache
+management~\cite{onTheSeparationAndEquivalenceOfPagingStrategies}).
+%
+
+To measure and compare the performance of data structures and
+algorithms in an objective way, so that the conclusions are valid for
+any possible data set, one study their performance on \emph{imaginary}
+instances, for instance chosen among finite sets of instances, chosen
+as to be representative of all the instances of size $n$, and this for
+each possible value of $n$.
+%
+\begin{EXAMPLE}
+  For instance, the set of sorting instances over $n$ elements is
+  infinite, but it can be represented by the finite set of the
+  $n!=n\times(n-1)\times\cdots\times2$ distinct permutations of
+  $[n]=\{1,\ldots,n\}$ to study the performance algorithms using only
+  comparisons of elements.
+\end{EXAMPLE}
+\begin{LONG}
+  
+\end{LONG}
+%% Worst/Best/Average Case Complexity
+The set of performances on such a finite set of instances is finite.
+%
+The maximum of those values is called the \emph{Worst Case}
+complexity, while its minimum is called the \emph{Best Case}
+complexity.
+%
+\begin{LONG}
+  Given a distribution, the average of the performances is called the
+  \emph{Average Case} complexity.
+\end{LONG}
+%
+%% Output Sensitive Complexity, Adaptive Analysis, Parameterized Complexity.
+\begin{LONG}
+  As the worst case complexity over instances of fixed size $n$ is
+  merely an approximation of the real performance and can be quite
+  pessimistic, for some applications it fails to yield a useful
+  comparison between some algorithms: in some cases two algorithms
+  have the same worst case complexity while they do perform
+  drastically differently in practice, and in some others the
+  comparison of worst case complexities yield \emph{opposite} results
+  from practice.
+\end{LONG}
+%
+\begin{LONG}
+  
+\end{LONG}
+%
+A refinement of the analysis over instances of fixed size $n$ is to
+consider further restrictions on the set of instances considered.
+%
+%
+\emph{Ouput Sensitive Complexity}, the restriction on the size of the
+answer to the instance has been succesfully used in the field of
+computational geometry to yield a better analysis technique on
+problems such as the computation of the convex
+hull~\cite{outputSensitiveResultsOnConvexHullsExtremePointsAndRelatedProblems}\begin{EXAMPLE}
+  which can be done in time $\bigo(n\log h)$, where $n$ is the size of
+  the input and $h$ the size of the output
+\end{EXAMPLE}.
+%
+%
+\emph{Adaptive Algorithm}, the restriction of instances of a certain
+size and difficulty, for a given measure of difficulty over the domain
+of answers, has yield practical improvements in algorithms answering
+conjonctive queries~\cite{dlm,dlmAlenex}, such as those occuring in
+search engines as \texttt{Google}, and sorting
+algorithms~\cite{estivillcastro92survey}.
+%
+%
+\emph{Parameterized Complexity}, the addition of some information
+about the instance to both the analysis and the algorithm, explained
+why some NP-complete problems are easier than some others in
+practice. 
+%
+\begin{EXAMPLE}
+  For instance, the vertex cover can be computed in $\bigo(kn +
+  1.274^k)$ time, where $n$ is the number of vertices and $k$ is the
+  size of the vertex cover.
+\end{EXAMPLE}
+%
+%
+\begin{LONG}
+  There are many other examples of refined techniques of analysis such
+  as \emph{Smoothed Analysis} (which explained why the Simplex
+  Algorithm performs well in practice while its theoretical complexity
+  is exponential), \emph{Instance Optimality} and \emph{Cooperative
+    Analysis} (which refines the \emph{Competitive Analysis} further).
+\end{LONG}
+%
+
+
+In this chapter, we introduce the idea at the core of each of the
+development described above through an artificial example, based on a
+variant of the {\hanoitpb} (Section~\ref{sec:hanoi-tower-problem}),
+and we define the category of studies that we consider as ``Adaptive
+Analysises'' (Section~\ref{sec:conc-adapt-analys}).
+%
+We then describe shortly the previous works which fall in this
+category (Section~\ref{sec:applications}), which we will explore
+further in the following chapters.
+
+
+
+\section{Concept of Adaptive Analysis}
+\label{sec:conc-adapt-analys}
+
+Several terms have been coined for the ideas illustrated in the
+sections above, and in the chapters to follow.
+%
+Yet we coin one more term, ``adaptive analysis'', to cover the
+multiple applications of the same idea.
+%
+We justify here shortly this choice of a new name by reviewing
+existing names and their shortcomings.
+
+\begin{itemize}
+\item The term ``adaptive algorithms'' is misleading in that an
+  algorithm is adaptive only in the context of an analysis with a
+  fixed measure of difficulty.
+  % 
+  As opposed to the concept of ``comparison based'' algorithms, which
+  refers to the set of instructions used by the algorithm, the concept
+  of ``adaptivity'' refers to the complexity analysis, not to the
+  algorithm.
+
+\item The term ``parameterized complexity'' refers to the complexity
+  analysis but also to the fact that an aditional parameter is given
+  along with the instance and its size. 
+  % 
+  This does not capture the fact that in many applications the
+  difficulty of an instance is not known.
+
+  Moreover, in the adaptive analysis of NP-hard problems the cost of
+  computing the difficulty of the parameter is only a constant factor
+  in the complexity of the algorithm.
+  % 
+  For instance, a if a problem's complexity is $2^{k}f(n)$ knowing the
+  value of $k$, then the complexty of the same problem without knowing
+  the value of $k$ is at most
+  $(1+2+3+\cdots+2^k)f(n)=(2^{k+1}-1)f(n)$.
+
+\item The term ``instance optimal'', used in database, points out a
+  worthy goal, an algorithm optimal on each instance, but which is
+  unreachable on many problems.
+
+\end{itemize}
+
+For all those reasons, we will use the term of ``adaptive analysis''
+to cover the various application of a complexity analysis for fixed
+values of the size and difficulty of instances.
+
+
+\section{Applications}
+\label{sec:applications}
+
+The idea of adaptive analysis has been independently rediscovered in many areas. 
+\begin{itemize}
+\item In Computational Geometry, the complexity of many algorithms is
+  expressed as a function of the size of their output, which in many
+  cases is a better indicator of the difficulty of the instance than
+  the size of the input.
+  % 
+  Typical examples are the {\bf output sensitive} convex hull
+  algorithm of Chan~\etal~\cite{chan96optimal} and the performance of
+  range searching data structures in which the query time is
+  $O(\log^{d-1} n+k)$, where $k$ is the number of points satisfying
+  the query.  
+  % 
+  A second example is {\bf online} geometric searching, in which the
+  performance of an algorithm is measured versus that of an offline
+  optimum.
+
+\item In Parameterized Complexity, certain intractable problems become
+  tractable if a certain {\bf parameter} of the problem is
+  constrained, while the input size is allowed to vary.
+  % 
+  For example, many NP-complete problems on graphs are polynomial if
+  we consider graphs of bounded tree-width.
+
+\item In Algorithm Design and Analysis, problems such as sorting have
+  been studied under a measure of difficulty on the input, using an
+  {\bf adaptive} framework yielding improved algorithms for every
+  instance as opposed to the worst case alone.
+  % 
+  A similar example is given by the intersection of sorted sets which
+  is a basic primitive in the evaluation web search engine queries
+  such as Google.
+  % 
+  In this case the intersection takes, in the worst case time
+  proportional to the input size, which is usually in the tenths to
+  hundreds of millions of terms.
+  % 
+  On the other hand, if the sets show some structure and the user only
+  requires the first ten elements in the intersection there exist
+  algorithms with faster performance on highly structured sets.
+
+\item In Databases, {\bf instance optimal algorithms} were introduced
+  in a celebrated paper by Fagin~\etal. 
+  % 
+  In this field it is important to resolve each query as fast as
+  possible, and to analyze the complexity of the algorithms using a
+  finer measure of difficulty, which can lead to improved algorithms.
+
+\item In Online Analysis, the performance of the off-line optimum
+  plays the role of a per-instance measure of the input difficulty,
+  and the {\bf online} algorithm is expected to match it, usually up
+  to a constant factor.
+
+\item In Smooth Analysis, the complexity of an algorithm is measured
+  by the expected cost over instances within small distance from the
+  input. For example, it has been shown that the simplex algorithm has
+  polynomial smoothed complexity. In contrast the worst case
+  complexity of the simplex algorithm is well known to be exponential
+  in the worst case.
+
+\item In Artificial Intelligence, {\bf adaptive measures} have been
+  used to study the performance of clustering algorithms.
+\end{itemize}
+
+
+Each community came up with its own set of techniques to take
+advantage of the simple fact that for some problems the worst case
+among all instances of same size is too pessimistic.
+%
+The development of techniques to address this weakness 
+followed different paths in each area of research.
+%
+While each of the fields have independently discovered intersecting 
+aspects of this common approach, certain concepts have yet to cross
+over between fields. 
+%
+For example, parameterized complexity has only recently begun to study
+``polynomial parametric algorithms''. 
+%
+Online analysis similarly, has focused on the offline optimum as a
+measure of difficulty of the input, even though in certain cases other
+measures might be more appropriate. 
+%
+In computational geometry, most algorithms are sensitive to output
+size, even though in certain cases (such as set intersection) the
+complexity of the input can be best parameterized using other
+measures.
+%
+Databases has focused on instance optimality while adaptive algorithms
+has focused on larger classes of inputs, as classified by a measure of
+difficulty. 
+%
+Adaptive algorithm analysis, in turn, has yet to benefit from
+structural results in parameterized complexity.
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "adaptiveAnalysisOfAlgorithm"
+%%% End: 

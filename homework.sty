@@ -1,0 +1,96 @@
+% HOMEWORK STYLE -- Released XXX
+%    for LaTeX-2e
+% Copyright -- 
+%
+% 
+%
+% This style file is free software; you can redistribute it and/or
+% modify it under the terms of the GNU Lesser General Public
+% License as published by the Free Software Foundation; either
+% version 2 of the License, or (at your option) any later version.
+%
+% This style file is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+% Lesser General Public License for more details.
+%
+% You should have received a copy of the GNU Lesser General Public
+% License along with this style file; if not, write to the
+% Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+% Boston, MA  02111-1307, USA.
+%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{homework}
+\typeout{Document Style `homework' - floating environment}
+
+\RequirePackage{float}
+\RequirePackage{ifthen}
+\newcommand{\HMW@within}{nothing}
+\newboolean{HMW@within}
+\setboolean{HMW@within}{false}
+\newcommand{\HMW@floatstyle}{ruled}
+\newcommand{\HMW@name}{Homework}
+\newcommand{\listhomeworkname}{List of \HMW@name s}
+
+% Declare Options
+% first appearance
+\DeclareOption{plain}{
+  \renewcommand{\HMW@floatstyle}{plain}
+}
+\DeclareOption{ruled}{
+  \renewcommand{\HMW@floatstyle}{ruled}
+}
+\DeclareOption{boxed}{
+  \renewcommand{\HMW@floatstyle}{boxed}
+}
+% then numbering convention
+\DeclareOption{part}{
+  \renewcommand{\HMW@within}{part}
+  \setboolean{HMW@within}{true}
+}
+\DeclareOption{chapter}{
+  \renewcommand{\HMW@within}{chapter}
+  \setboolean{HMW@within}{true}
+}
+\DeclareOption{section}{
+  \renewcommand{\HMW@within}{section}
+  \setboolean{HMW@within}{true}
+}
+\DeclareOption{subsection}{
+  \renewcommand{\HMW@within}{subsection}
+  \setboolean{HMW@within}{true}
+}
+\DeclareOption{subsubsection}{
+  \renewcommand{\HMW@within}{subsubsection}
+  \setboolean{HMW@within}{true}
+}
+\DeclareOption{nothing}{
+  \renewcommand{\HMW@within}{nothing}
+  \setboolean{HMW@within}{true}
+}
+\DeclareOption*{\edef\HMW@name{\CurrentOption}}
+
+% HOMEWORK
+%
+\ProcessOptions
+\floatstyle{\HMW@floatstyle}
+\ifthenelse{\boolean{HMW@within}}{
+  \ifthenelse{\equal{\HMW@within}{part}}
+     {\newfloat{homework}{htbp}{loh}[part]}{}
+  \ifthenelse{\equal{\HMW@within}{chapter}}
+     {\newfloat{homework}{htbp}{loh}[chapter]}{}
+  \ifthenelse{\equal{\HMW@within}{section}}
+     {\newfloat{homework}{htbp}{loh}[section]}{}
+  \ifthenelse{\equal{\HMW@within}{subsection}}
+     {\newfloat{homework}{htbp}{loh}[subsection]}{}
+  \ifthenelse{\equal{\HMW@within}{subsubsection}}
+     {\newfloat{homework}{htbp}{loh}[subsubsection]}{}
+  \ifthenelse{\equal{\HMW@within}{nothing}}
+     {\newfloat{homework}{htbp}{loh}}{}
+}{
+  \newfloat{homework}{htbp}{loh}
+}
+\floatname{homework}{\HMW@name}
+
+\newcommand{\listofhomeworks}{\listof{homework}{\listhomeworkname}}
+

@@ -1,0 +1,197 @@
+%%
+%% onlineAlgorithms.tex
+%% 
+%% Made by Jeremy Barbay
+%% Login   <jbarbay@condorito>
+%% 
+%% Started on  Tue May  6 19:32:31 2008 Jeremy Barbay
+%% Last update Tue May  6 19:32:31 2008 Jeremy Barbay
+%%
+
+\chapter{Online Algorithms}
+\label{cha:online-algorithms}
+
+
+\section{Introduction}
+\label{sec:introduction-online-algorithms}
+
+
+\subsection{Examples}
+\label{sec:examples}
+
+
+
+Examples of online problems known from the students are in two
+categories: those concerning an unknown fixed instance, and those
+concerning instances which change dynamically:
+
+\begin{itemize}
+\item Unknown Fixed Instance:
+  \begin{itemize}
+  \item The robot without a map;
+  \item A human with a bag on the head [sic];
+  \item The cow in a field, the lost car on a road;
+  \item An instance of unknown input size.
+  \end{itemize}
+
+\item Dynamic Instance
+  \begin{itemize}
+  \item Dynamic Task assignments (to processors, cores, computers,
+    humans,...);
+  \item Cache management (Paging).
+  \end{itemize}
+\end{itemize}
+
+
+
+There is no difference between a static but unknown instance and a
+dynamic instance: both are considered online problems, as they are the
+same from the point of view of the algorithm.
+
+
+
+
+
+\subsection{Paging}
+\label{sec:paging}
+
+
+We will illustrate the concepts concerning the complexity analysis of
+online problems and algorithms using the problem of paging.
+%
+Consider a large slow memory of $N$ blocs and a small fast memory of
+$k$ blocs. 
+%
+An application require blocs of the slow memory, forming a sequence of
+requests $S\in[N]$.
+%
+The paging problem is to load a selection of the blocs in the small
+fast memory and to maintain this selection dynamically so that to
+minimize the number of loads from the slow memory, called a \emph{page
+  fault}.
+
+
+The best offline algorithm is the one ejecting from the cache the page
+accessed the most further in the future.
+
+The best online algorithm depends of the application (some memory
+require not only good choices, but also that the choosing algorithm
+runs in small space and time), but generally the algorithms ejecting
+the block \texttt{Least Recently Used} at each page fault (\emph{LRU}
+and its variants) is considered to perform well.
+
+
+
+\subsection{Straight Worst Case Analysis}
+\label{sec:straight-worst-case}
+
+It is not difficult to show that for any integer $n$ and any
+deterministic paging algorithm $A$, there is at least one sequence $S$
+of lenght $n$ on which $A$ will perform $n$ page faults.
+
+On the other hand, all reasonable algorithms will do at most $n$ page
+faults: using straight forward worst case analysis does not give much
+usefull information, as all algorithms are worst case optimal.
+
+\begin{NOTE}
+  Discussion on the average case and Random algorithms?
+\end{NOTE}
+
+
+\section{Competitive Analysis}
+\label{sec:competitive-analysis}
+
+\begin{definition}
+  The \emph{competitive ratio} of an online algorithm $A$ is defined
+  as the worst possible ratio of performance between $A$ and an
+  optimal offline algorithm, over all possible instances (of any
+  size).
+  $$\rho(A) 
+  = 
+  \sup_I \frac{\idtt{Perf}(A,I)}{\idtt{Perf}(\idtt{OPT},I)}$$
+
+  An algorithm is said to be \emph{$r$-competitive} if its competitive
+  ration is $r$.
+\end{definition}
+
+
+It is well known that no algorithm can have a better (i.e. smaller)
+competitive ratio than $k$.
+%
+Many algorithms have an optimal competitive ratio of $k$:
+%
+ Least Recently Used (LRU),
+%
+First In First Out (FIFO),
+%
+Flush When Full (FWF).
+%
+This is a problem, because while LRU performs well in practice, the
+others do not: the competitive ratio does not predict well the
+performance of the online paging algorithms in practice.
+
+
+Another problem is that among the variants of LRU which work well in
+practice, those which have access to a small window in the future
+(which is realistic for some particular applications) perform the
+best, while one can prove that this does not reduce the competitive
+ratio (since LRU without lookup has an optimal competitive ratio).
+
+
+\section{Cooperative/Collaborative Analysis}
+\label{sec:coll-analys}
+
+While there has been many tentative to replace the competitive ratio
+by another complexity measure, most of them fail to separate the
+algorithms which are known to be good in practice from the others.
+
+
+\subsection{Concave Analysis}
+\label{sec:concave-analysis}
+
+One of them is concave analysis, defined by Albers et al [STOC 2002].
+%
+They give a nice caracterisations of ``realistic'' instances, where
+for instance the programmer optimizes his program to generate a
+sequence of queries with a maximum of locality of reference.
+
+
+
+\subsection{Bijective Analysis}
+\label{sec:bijective-analysis}
+
+The bijective analysis is the idea to compare the performance of
+algorithms by pairs, rather than to compare each algorithm to the
+optimal (offline) one.
+
+\subsection{Concave+Bijective Analysis}
+\label{sec:conc-analys}
+
+While separately the concave and bijective analysis did not separate
+between the online algorithms, their combinations as defined by
+Angelopoulos, Dorrigiv and Lopez-Ortiz gives a nice separation of the
+algorithms in classes which neatly separate LRU from other non
+practical ones, and show theoretically the advantage given by look-up.
+
+
+
+\section{Perspective}
+\label{sec:perspective-online-problems}
+
+Both Competitive Analysis and Collaborative Analysis are usefull to
+analyze online problems. 
+%
+\begin{itemize}
+\item Collaborative Analysis is a very new technique and can probably
+  be applied to many problem;
+\item Other measure of difficulty, specially designed for online
+  problems, might be of interest: collaborative analysis assumes that
+  the programmer ``collaborate'' with the paging algorithm, in some
+  other online problems this is not realistic.
+\end{itemize}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "adaptiveAnalysisOfAlgorithm"
+%%% End: 

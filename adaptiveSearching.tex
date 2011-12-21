@@ -1,0 +1,124 @@
+%%
+%% adaptiveSearching.tex
+%% 
+%% Made by Jeremy Barbay
+%% Login   <jbarbay@condorito>
+%% 
+%% Started on  Wed Apr  9 13:48:57 2008 Jeremy Barbay
+%% Last update Wed Apr  9 13:48:57 2008 Jeremy Barbay
+%%
+
+
+\chapter{Searching}
+\label{cha:adapt-analys-search}
+
+
+\section{In Sorted Arrays}
+\label{sec:sorted-arrays-using}
+
+
+The comparison-based algorithms most cited by the students to search
+for the insertion rank \glossary{insertion rank} \index{insertion
+  rank} of an element in a sorted array \glossary{sorted array} are
+binary search \glossary{binary search} and linear
+search\footnote{Interpolation search \glossary{interpolation search},
+  although it is using comparison, is also using the value of the
+  element, and hence is not considered ``comparison based''.}
+\glossary{linear search}.
+
+A regular implementation of binary search returns the insertion rank
+$r$ of an element $x$ in a sorted array $A$ of $n$ elements in
+$\lceil\lg n\rceil+1\in\bigo(\lg n)$ comparisons in the worst case and
+in $\lfloor\lg n\rfloor+1\in\bigo(\lg n)$ comparisons in the best case.
+
+
+The performance of linear search is much more variable: the algorithm
+will perform $\min(r,n)$ comparisons (between $1$ and $n$), which
+corresponds to a worst case complexity of $\bigo(n)$ comparisons.
+%
+An interesting (if minor) fact is that, whenever the insertion rank of
+$x$ is less than $\lceil\lg n\rceil+1$, {\em linear search outperforms
+  binary search}.
+
+The doubling search algorithm\glossary{doubling
+  search}~\cite{anAlmostOptimalAlgorithmForUnboundedSearching,unboundedSearchingAlgorithms,moreNearlyOptimalAlgorithmsForUnboundedSearchingI,moreNearlyOptimalAlgorithmsForUnboundedSearchingII}
+returns the insertion rank after $1+2\lg r$ comparisons.
+%
+Hence, doubling search outperforms binary search whenever the
+insertion rank of $x$ is less than $\sqrt{n}$.
+%
+It is widely used in practice, whereas its asymptotic worst case
+complexity is the same than binary search, both optimal in the
+comparison model: the traditional worst case analysis for a fixed
+value of $n$ fails to distinguish the performance of those algorithms.
+
+
+
+\begin{homework}[e]
+  \caption{Adaptive Analysis of MultiSearch. \label{hmw:multiSearch}}  
+  How many comparisons are required to search for the insertion rank
+  of $d$ (sorted) elements in a sorted array $A$ of size $n$, when
+  those elements are at positions $p_1,\ldots,p_d$?  What is the worst
+  case complexity when $n$ and $d$ are fixed?  Assume that $p_0=1$:
+  what is the worst case complexity when $n$ and $\sum_{i=1}^d
+  \lg(p_i-p_{i-1})$ are fixed?
+\end{homework}
+
+\begin{openproblem}
+\caption{Adaptive Analysis of Interpolation/Extrapolation Search}
+  What could be a good adaptive analysis of interpolation search?
+  \glossary{extrapolation search} The {\em extrapolation search}
+  \glossary{extrapolation search}
+  algorithm~\cite{fasterAdaptiveSetIntersectionsForTextSearching}
+  generalizes the interpolation search in the same way that the
+  doubling search generalizes the binary search. What could be a good
+  adaptive analysis of extrapolation search?
+\end{openproblem}
+
+
+\begin{adaptiveanalysis}
+  \begin{tabular}{@{\bf}p{.25\textwidth}p{.75\textwidth}}
+    Problem            & {\tt Static Searching}\\               
+    Classical Approach & With {\tt Binary Search}, with $\lg(2n+1)$ comparisons.\\
+    Easy Instances     & For {\tt Linear Search}, from $1$ to $2n$ comparisons.\\
+    Difficulty Measure & The position $p$ of the searched element.\\
+    Adaptive Analysis  & {\tt Linear Search} performs at most $2p$ comparisons.\\
+    New Algorithm      & {\tt Doubling Search} performs at most $2\lg(p)$ comparisons. \\
+    Lower Bound        & $\Omega(\lg p)$ comparisons are required.\\
+  \end{tabular}
+  \caption{Worst Case Adaptive Analysis of Static Searching with
+    Comparisons}
+  \label{tab:staticSearching}
+\end{adaptiveanalysis}
+
+\section{In Dynamic Data Structures}
+\label{sec:dynam-data-struct}
+
+\begin{TODO}
+Talk about Binary Search Tree,
+and Finger Search Tree, and give the references.
+\end{TODO}
+
+
+
+
+\begin{adaptiveanalysis}
+  \begin{tabular}{@{\bf}p{.25\textwidth}p{.75\textwidth}}
+    Problem            & {\tt Dynamic Searching}\\               
+    Classical Approach & With {\tt Binary Search Tree}, with $\bigo(\lg n)$ comparisons.\\
+    Easy Instances     & For a {\tt Linked List}, from $1$ to $2n$ comparisons.\\
+    Difficulty Measure & The gap $p$ between the searched element and the previous searched element.\\
+    Adaptive Analysis  & With a {\tt Linked List}, at most $2p$ comparisons.\\
+    New Algorithm      & With a {\tt Finger Search Tree}, at most $4\lg(p)$ comparisons. \\
+    Lower Bound        & $\Omega(\lg p)$ comparisons are required.\\
+  \end{tabular}
+  \caption{Worst Case Adaptive Analysis of Dynamic Searching with
+    Comparisons}
+  \label{tab:dynamicSearching}
+\end{adaptiveanalysis}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "adaptiveAnalysisOfAlgorithm"
+%%% End: 

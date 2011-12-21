@@ -1,0 +1,1571 @@
+%%
+%% adaptivePatternMatching.tex
+%% 
+%% Made by Jeremy Barbay
+%% Login   <jbarbay@condorito>
+%% 
+%% Started on  Thu Apr 17 18:30:35 2008 Jeremy Barbay
+%% Last update Thu Apr 17 18:30:35 2008 Jeremy Barbay
+%%
+
+\chapter{Pattern Matching in Trees}
+\label{cha:pattern-matching}
+
+
+\begin{definition}
+  A {\bf multi-labeled tree} is an ordinal tree on $\nbobjects$ nodes
+  with a set of $\nblabels$ labels, and a set of $\nbrels$ pairs from
+  $[\nbobjects]\times[\nblabels]$.
+%
+\end{definition}
+
+\section{Path Subset Queries}
+\label{sec:path-subset-queries}
+
+
+\subsection{Conjunctive Path Subset Queries~\cite{adaptiveSearchingInSuccinctlyEncodedBinaryRelationsAndTreeStructuredDocumentsTCS}}
+\label{sec:conj-quer-path}
+
+
+
+A file system index associates several keywords with each folder or
+file (such as the words and extension composing its name, or the words
+contained by a text-file): we represent it as a multi-labeled tree.
+%
+\begin{INUTILE}
+  The search in file-systems (and hence in multi-labeled trees) is an
+  important application, and the
+  tools~\cite{XPRESSAQueriableCompressionForXMLData,pathQueriesOnCompressedXML,comLabSchem,impLabSchem}
+  used to search in XML documents can be extended to multi-labeled
+  trees.
+  % 
+  But the structural queries~\cite{xpath,xpath2} on XML documents are
+  not adequate for the search in file systems, as their structure is
+  too heavy for the user.
+\end{INUTILE}
+% 
+We introduce a new type of query to search in labeled and
+multi-labeled trees, that corresponds to one of the most natural
+search query that one can perform in a file-system.
+
+\begin{definition} 
+  Given a multi-labeled tree and a set $Q$ of $\nbkeywords$ labels,
+  the answer to an {\em unordered path-subset query} is the set of
+  nodes $\object$ such that:
+  \begin{enumerate}  
+  \item the rooted path to $\object$ contains nodes matching all the
+    labels from $Q$; and,
+  \item this path contains no node satisfying $(1)$ other than
+    $\object$.
+\end{enumerate}
+\end{definition}
+
+
+Such queries are motivated by the search in file systems, where the
+result corresponds to folders or files whose path matches the set of
+keywords.
+%
+Condition $(2)$ ensures the succinctness of the answer, as the
+subtrees corresponding to the answer are disjoint.
+%
+Using techniques similar to those used for the intersection problem,
+we prove the following result:
+
+\begin{theorem}\label{th:mTreeExactMatchUB}
+  Consider a multi-labeled tree of $\nbobjects$ nodes and $\nblabels$
+  labels, associated in $\nbrels$ pairs.
+%
+  Given an unordered path-subset query composed of $\nbkeywords$
+  labels, there is an algorithm solving it which performs
+  $\mTreeExactSearches$ operator calls, and takes time
+  $\mTreeExactTime$, where $\difficulty$ is the minimum number of
+  operation performed by a non-deterministic algorithm to solve the
+  query.
+\end{theorem}
+
+
+\begin{proof}
+  Suppose that $\object$ is initialized to the root of the tree and
+  that $\lab$ is initialized to the first label of the query.
+  % 
+  If we consider the nodes in pre-order, and introduce an extra node
+  $\infty$ that matches all labels and is a successor to all nodes,
+  our algorithm proceeds as follows:
+  \begin{enumerate}
+  \item \textbf{ If} $\object=\infty$, exit;
+  \item \textbf{ If} $\nbkeywords$ labels are matched, output $\object$, \\
+    set it to the next node matching $\lab$ (in preorder), and go to $1$; \\
+    \textbf{ Otherwise}, set $\lab$ to the next label from $Q$ in cyclic order;
+  \item \textbf{ If} $\object$ has an ancestor labeled $\lab$, go to $2$;    
+  \item \textbf{ If} $\object$ has a descendant labeled $\lab$, \\
+    set it to the first such descendant (in preorder), and go to $2$;         \\
+    \textbf{ Otherwise}, set $\object$ to the next node matching
+    $\lab$ (in preorder), and go to $1$.
+  \end{enumerate}
+  
+  The search for an ancestor or a descendant labeled $\lab$ is
+  supported directly by our encoding for multi-labeled trees, and the
+  next node matching $\lab$ in preorder can be found using the
+  $\StrRank$ and $\StrSelect$ operators on the sequence of labels
+  representing the preorder traversal of the tree.
+
+  This algorithm cycles through the labels in the query set, so that
+  $\object$ refers to the node with smallest rank in preorder of the
+  current potential match.
+
+  The pre-order rank of successive nodes pointed to by $\object$ is
+  strictly increasing at each update, so that at any time, all
+  pre-order predecessors of $\object$ have been considered and have
+  been output if adequate.
+  % 
+  Every $\nbkeywords$ iterations of the loop the algorithm considered
+  at least as many nodes as a non-deterministic algorithm would have
+  in a single operation: it takes at most $\nbkeywords$ steps to
+  eliminate as many potential result nodes as a non-deterministic
+  algorithm, which can ``guess'' which operation to perform to
+  eliminate the largest number of potential result nodes.
+
+  When the pre-order rank of $\object$ reaches its final value, all
+  nodes have been considered (hence the correctness), and the
+  algorithm has performed at most $2\difficulty\nbkeywords$ operator
+  calls where a non-deterministic algorithm would have performed at
+  least $\difficulty$ (hence the complexity result).
+
+  As each operator costs time $\mSequenceTime$, the algorithm performs
+  $\mTreeExactSearches$ operations in time $\mTreeExactTime$ to solve
+  the query.  \qed
+\end{proof}
+
+Unless the operators defined in
+Section~\ref{sec:multiLabeledSequences} can be encoded more
+efficiently, we prove that this result is optimal for deterministic
+algorithms, in the worst case (depending on the algorithm) as well as
+on average on a distribution independent of the algorithm (which is a
+much stronger result, leading to Theorem~\ref{th:mTreeExactMatchLB}).
+
+\begin{lemma}\label{lem:mTreeExactMatchLB}
+  Consider any deterministic algorithm \id{Alg} solving unordered
+  path-subset queries, and $\difficulty\geq1$, $\nbkeywords\geq2$,
+  $\nbobjects\geq2\difficulty\nbkeywords{+}1$, and
+  $\nblabels\geq2k{+}1$.
+  % 
+  There is a probability distribution $\cal D$ on labeled trees with
+  ${\cal O}(\nbobjects)$ nodes and ${\cal O}(\nblabels)$ labels, and
+  an unordered path-subset query composed of $\nbkeywords$ labels
+  which can be solved by a non-deterministic algorithm in at most
+  ${\cal O}(\delta)$ operations on any labeled tree from $\cal D$,
+  such that \id{Alg} performs $\Omega(\difficulty\nbkeywords)$
+  operator calls on average to solve instances from~$\cal D$.
+\end{lemma}
+\begin{proof}
+  We first define a distribution $D_1$ proving the result in the case
+  where $\difficulty=1$, and we draw a random labeled tree from $D$
+  with the desired properties by combining $\difficulty$ labeled trees
+  randomly drawn from $D_1$.
+
+  Define a ``double branch'' tree as one consisting of a root with two
+  children, each of which has a single chain of $k-1$
+  descendants. 
+% 
+  Hence the tree has $2k + 1$ nodes, two of which are leaves at depth
+  $k$.
+%with only two leaves, of same
+%  depth $\nbkeywords$, and constituted of $2\nbkeywords{+}1$ nodes.
+%
+  Let the tree $P$ be the double branch tree with root labeled
+  $a_{2\nbkeywords{+}1}$ such that the nodes of one branch are labeled
+  $a_1,\ldots,a_k$, and the nodes of the other branch are labeled
+  $a_{k{+}1},\ldots,a_{2k}$, both from top to leaf.
+%
+  Define for any $i\in\{1,\ldots,\nbkeywords\}$ the labeled tree $N_i$
+  by switching the labels in $P$ of the two nodes at depth $i$, as
+  illustrated in Figure~\ref{fig:doubleBranch}.
+%
+  The trees $P,N_1,\ldots,N_k$ are very similar: to prove or disprove
+  the existence of a match of query $\{a_1,\ldots,a_k\}$ any
+  deterministic algorithm, given only the operators of the succinct
+  encoding, has to perform $\nbkeywords$ operator calls in the worst
+  case.
+%
+  We define $D_1$ to be the uniform distribution on trees $P, N_1,
+  \ldots, N_k$.
+
+  \begin{figure}
+    \begin{minipage}[b]{.47\textwidth}
+      \centering
+      \Tree [ .$a_{2\nbkeywords+1}$
+      [ .$a_1$ [ .$\vdots$ [ .$a_{i}$ [ .$\vdots$ $a_k$ ] ] ] ] 
+      [ .$a_{k{+}1}$ [ .$\vdots$ [ .$a_{k{+}i}$ [ .$\vdots$ $a_{2k}$ ] ] ] ] 
+      ]
+      \Tree [ .$a_{2\nbkeywords+1}$
+      [ .$a_1$ [ .$\vdots$ [ .$a_{k{+}i}$ [ .$\vdots$ $a_k$ ] ] ] ] 
+      [ .$a_{k{+}1}$ [ .$\vdots$ [ .$a_{i}$ [ .$\vdots$ $a_{2k}$ ] ] ] ] 
+      ]      
+      \caption{The double branch trees $P$ with a single match (on
+        the left), and $N_i$ without any match (on the right).}
+      \label{fig:doubleBranch}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{.47\textwidth}
+      \centering
+      \Tree [ .$a_{2\nbkeywords+1}$
+      [ .$a_1$ [ .$\vdots$ [ .$a_{k{+}i}$ [ .$\vdots$ $a_k$ ] ] ] ] 
+      [ .$a_{k{+}1}$ [ .$\vdots$ [ .$a_{i}$ [ .$\vdots$ $a_{2k}$ ] ] ] ] 
+      $\cdots$
+      [ .$a_1$ [ .$\vdots$ [ .$a_{k{+}j}$ [ .$\vdots$ $a_k$ ] ] ] ] 
+      [ .$a_{k{+}1}$ [ .$\vdots$ [ .$a_{j}$ [ .$\vdots$ $a_{2k}$ ] ] ] ] 
+      ]      
+      \caption{A general tree, composed of $\difficulty$ double branch
+        trees joined by the root, drawn randomly from $\{P,N_1,\ldots,N_k\}$.}
+      \label{fig:generalInstance}
+    \end{minipage}
+\end{figure}
+
+%Draw a tree from the distribution $D_1$ by picking a number uniformly
+%at random $i\in\{1,\ldots,\nbkeywords\}$, and then choosing between $P$ and $N_i$. 
+%
+Any deterministic algorithm accessing the tree only through the
+operators $\LabTreeAnc$, $\LabTreeDesc$ or $\LabTreeNbDesc$ will
+perform on average more than $\nbkeywords/2$ operator calls before
+being able to decide if the tree has a match or not, hence the result
+for $\difficulty=1$.
+
+Draw a tree from distribution $D$ by picking independently
+$\difficulty$ trees from $D_1$, and joining them at the root, as
+described in Figure~\ref{fig:generalInstance}.
+%
+The tree formed has $2\difficulty\nbkeywords+1\leq\nbnodes$ nodes
+labeled from an alphabet of size $2\nbkeywords{+}1\leq\nblabels$, and
+$2\difficulty$ operator calls are sufficient to check which nodes
+match the query $\{a_1,\ldots,a_\nbkeywords\}$, if any.
+%
+As each double branch forming the tree has the same number of
+$\lab$-nodes for any label $\lab$, the operations performed in one
+particular double branch gives no clue about the presence of a match
+in another double branch, hence the lower bound of
+$\difficulty\nbkeywords/2$ operator calls on average, and the desired
+result.\qed
+\end{proof}
+
+Now we use the Yao-von Neumann principle
+\cite{vonneumann1944,sion58,yao} to prove a lower bound on the
+complexity of any randomized algorithm:
+
+\begin{theorem}\label{th:mTreeExactMatchLB}
+  Consider any randomized algorithm \id{RandAlg} solving unordered
+  path-subset queries, and $\difficulty\geq1$,
+  $\nbobjects\geq2\difficulty\nbkeywords{+}1$, $\nbkeywords\geq2$, and
+  $\nblabels\geq2k{+}1$.
+%
+  There is a labeled tree of ${\cal O}(\nbobjects)$ nodes in
+  association with ${\cal O}(\nblabels)$ labels, and an unordered
+  path-subset query composed of $\nbkeywords$ labels which can be
+  solved by a non-deterministic algorithm in at most ${\cal
+    O}(\delta)$ operations, such that \id{RandAlg} performs on average
+  $\Omega(\difficulty\nbkeywords)$ operator calls to answer the query.
+\end{theorem}
+
+\begin{proof} % [of Theorem~\ref{th:mTreeExactMatchLB}]
+  Lemma~\ref{lem:mTreeExactMatchLB} gives a distribution on which any
+  deterministic algorithm performs poorly on average.  The Yao-von
+  Neumann principle permits the deduction from this distribution of a
+  lower bound on the worst case complexity of randomized algorithms.
+  \qed
+\end{proof}
+
+The proof of those results is similar to their counterpart on the
+intersection problem~\cite{adaptiveIntersectionAndTThresholdProblems}.
+%
+In particular, Theorems~\ref{th:mTreeExactMatchUB}
+and~\ref{th:mTreeExactMatchLB} show that a deterministic algorithm
+performs as well as any randomized algorithm for unordered path-subset
+queries, in term of the number of operator calls.
+%
+Note that, since labeled trees form a subset of multi-labeled trees,
+the lower bounds stand for multi-labeled trees as well.
+
+
+
+\subsection{Weighted Threshold Path Queries~\cite{adaptiveAlgorithmsForWeightedQueriesOnWeightedBinaryRelationsAndLabeledTrees}}
+\label{sec:thresh-path-quer}
+
+
+
+The main idea of path-subset
+queries~\cite{adaptiveSearchingInSuccinctlyEncodedBinaryRelationsAndTreeStructuredDocuments}
+is that the effect of labels associated with nodes ``propagates'' to the descendants of nodes.
+%
+We extend this concept through the definition of a score function on
+the nodes of the tree that depends on the labels associated with a
+node and its ancestors, and on the weight of these associations.
+
+Formally, given a query $\Q$ on a tree $\tree$ labeled through the
+relation $\R$, the path-score of a node $\nodex$ is defined as the sum
+of maximum values of $Q(\labelx)\R(\labelx,\nodey)$ for each node
+$\nodey$ which is $\nodex$ or one of its ancestors, over all labels
+$\labelx \in [\nblabels]$.
+%
+Each label is
+counted only once, i.e. a label $\labelx$ contributes only
+$\max_{\nodey}{\R(\labelx,\nodey)}$ to node $\nodex$, where
+$\nodey$ is $\nodex$ or one of its ancestor.
+%
+This defines the {\em path-score} of $\nodex$ as 
+$$\pathscore(\tree,\R,\Q,\nodex)= \sum_{\labelx\in[\nblabels]}
+\Q(\labelx) \max_{\nodey \in \ancestors(x) \cup
+  \{\nodex\}}{\R(\labelx,\nodey)}.$$
+
+
+Combining this score function on nodes with the concept of weighted
+threshold set queries in the context of weighted labeled trees brings 
+the concept of {\em weighted threshold path-subset} queries, answered
+for a given parameter $\threshold$ by the set of nodes of path-score at
+least~$\threshold$ that do not have any ancestor matching this
+property.
+
+\begin{figure}[h]
+  \centering
+    \Tree
+[ .\frame{\ 
+  \begin{tabular}{c}
+    home\\3
+  \end{tabular}
+  \ }
+[ .\frame{\
+  \begin{tabular}{c}
+    Music\\2
+  \end{tabular}
+  \ }
+  [ .\frame{\ 
+    \begin{tabular}{c}
+      Classical\\1
+    \end{tabular}
+    \ } $\cdots$ ]
+  [ .\frame{\
+    \begin{tabular}{cc}
+      Pop  & Jazz \\ 1 & 1
+    \end{tabular}
+    \ }  $\cdots$ ]
+  [ .\frame{\
+    \begin{tabular}{cc}
+      Pop&Rock\\ 1 & 1
+    \end{tabular}
+    \ }  $\cdots$ ]    
+]
+[ .\frame{\
+  \begin{tabular}{c}
+    Video\\2
+  \end{tabular}
+  \ }
+  [ .\frame{\
+    \begin{tabular}{cc}
+      Rock & Concerts\\ 1 & 1
+    \end{tabular}
+    \ }  $\cdots$ ]    
+  [ .\frame{\
+    \begin{tabular}{c}
+      Jazz\\1
+    \end{tabular}
+    \ }  $\cdots$ ]    
+  [ .\frame{\
+    \begin{tabular}{c}
+      Previews\\1
+    \end{tabular}
+    \ } $\cdots$ ]    
+]
+]
+\caption{An example of a simple file system. Each node represents a
+  folder and contains the words associated with it, along with the
+  weight of these associations.}
+  \label{fig:fileSystem}
+\end{figure}
+
+We propose an algorithm to solve these queries in the case where the labels are associated with the nodes on the
+same root-to-leaf path with non-increasing weights, i.e. there is no such a node $\nodex$ that has a label $\labelx$ associated with it with some weight $\R(\nodex, \labelx)$ and that has a descendant $\nodex^\prime$ associated with the same label with larger weight $\R(\nodex^\prime, \labelx) > \R(\nodex, \labelx)$. This non-increasing restriction does not restrict instances where the
+weights of the labels of the tree are all null or unitary: in both cases trees are non-increasing by definition.
+
+This restriction makes the contribution of a label $\labelx$ to the
+path-score of a node $\nodex$ depend only on the weight of the closest
+to the root ancestor of the node $\nodex$ associated with the label
+$\labelx$, instead of depending on the arbitrary one with the large
+weight of its association with the label $\labelx$.
+%
+To solve weighted threshold path-subset queries in the general case,
+an algorithm would have to compute
+$\max_{\nodey\in\ancestors(x)\cup\{\nodex\}}{\R(\labelx,\nodey)}$
+regularly, which makes it more complex.
+
+
+%%%%%%%%%%%%%%%%%%% ADAPTIVE ANALYSIS DEFINITIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\medskip 
+
+We describe an adaptive analysis of the complexity of our algorithm by
+using a measure of difficulty inspired by the partition-certificates
+and alternation, as defined for queries on binary relations.
+%
+As before, any algorithm answering a weighted threshold path-subset
+query has to check the correctness of its result.
+%
+For this query-type, it corresponds to producing a certificate that each
+node in the answer set has a path-score of at least the threshold, and that
+each node that is not in the answer set either has an ancestor that is in this set or has a
+path-score smaller than the threshold.
+
+Any order of the nodes can be used to easily define sets of
+nodes that cannot belong to the answer set.
+%
+As threshold path-subset queries are based solely on the
+ancestor-descendant relation between nodes, we propose an analysis
+based on the preorder traversal of the tree, in which all the
+descendants of a node are consecutive.
+%
+As Figure~\ref{fig:fileSystem} represents an example of the file system with nodes corresponding to files and folders and labels corresponding to their names, Figure~\ref{fig:binRelEncodingOfMultiLabeledTree} represents the binary encoding of it.
+
+
+\begin{figure}
+  \centering
+
+  \begin{minipage}{.45\linewidth}
+    $$  \begin{array}[b]{cc|c|c|c|c|c|c|c|c|c|c|}        \cline{3-11}
+      &             &1&2&3&4&5&6&7&8&9                \\ \cline{3-11}
+      \mbox{Classical}&\rightarrow  &.&.&1&.&.&.&.&.&.\\ \cline{3-11}
+      \mbox{ Concerts}&\rightarrow  &.&.&.&.&.&.&1&.&.\\ \cline{3-11}
+      \mbox{\bf Home }&\rightarrow  &3&.&.&.&.&.&.&.&.\\ \cline{3-11}
+      \mbox{    Jazz} &\rightarrow  &.&.&.&1&.&.&.&1&.\\ \cline{3-11}
+      \mbox{\bf Music}&\rightarrow  &.&2&.&.&.&.&.&.&.\\ \cline{3-11}
+      \mbox{\bf Pop  }&\rightarrow  &.&.&.&1&1&.&.&.&.\\ \cline{3-11}
+   \mbox{\bf Previews}&\rightarrow  &.&.&.&.&.&.&.&.&1\\ \cline{3-11}
+      \mbox{    Rock} &\rightarrow  &.&.&.&.&1&.&1&.&.\\ \cline{3-11}
+      \mbox{    Video}&\rightarrow  &.&2&.&.&.&.&.&.&.\\ \cline{3-11}
+    \end{array}$$
+  \end{minipage}
+  \begin{minipage}{.45\linewidth}
+    \Tree
+[ .{1}
+[ .{2}
+  [ .{3} $\cdots$ ]
+  [ .{4}  $\cdots$ ]
+  [ .{5}  $\cdots$ ]    
+]
+[ .{6}
+  [ .{7}  $\cdots$ ]    
+  [ .{8}  $\cdots$ ]    
+  [ .{9} $\cdots$ ]    
+]
+]
+  \end{minipage}
+  \caption{The encoding of the example of Figure~\ref{fig:fileSystem} using a weighted binary relation.
+    %  
+    The null weights are noted by dots for the sake of readability.
+    %  
+    Each number in the schema of the tree is the preorder rank of the corresponding
+    node.
+	}
+	\label{fig:binRelEncodingOfMultiLabeledTree}  
+\end{figure}
+
+We generalize the concept of the {\em partition-certificate}, introduced on binary
+relations, to multi-labeled trees as a partition $(I_i)_{i\in[\difficulty]}$ of the set $[\nbobjects]$ of all
+nodes, such that for any $i\in[\difficulty]$ either
+%
+\begin{itemize}
+
+\item[(i)] $I_i$ corresponds exactly to a subtree with a root $\nodex$, such
+  that the path-score of $\nodex$ is at least the threshold and each
+  ancestor of $\nodex$ has a path-score lower than the threshold; or
+
+\item[(ii)] there is a set $S$ of labels such that no label from $S$ is
+  associated with any node in $I_i$ or any of its ancestors,
+  and such that the sum of the maximum possible weights of the remaining labels is
+  insufficient to reach the threshold-value:  $\sum_{\labelx\notin S}\Q(\labelx)\maxWeightR<\threshold$; or
+
+\item[(iii)] all the elements in $I_i$ have path-subset smaller than threshold but are not in (ii),
+  i.e. they do not have a subset $S$ of labels with the properties described.
+
+\end{itemize}
+%
+In the first case, $I_i$ corresponds to a subtree such that the
+path-score of the root $\nodex$ is at least the threshold, so that
+$\nodex$ is in the result set and all its descendant can be ignored.
+%
+In the second case, $I_i$ corresponds to a block of consecutive nodes
+in preorder that do not match enough labels to have sufficient weight, even assuming that all other labels contribute maximum possible value $\maxWeightR$ to their path-score.
+%
+In the third case, $I_i$ consists of node(s) whose path-score is less than the threshold as in the second case, but that do not have a subset of labels mentioned above, i.e. they would have gotten path-score of threshold or more, if all the labels associated with them or their root path had contributed $\maxWeightR$ each.
+
+As for binary relations, we define the {\em alternation} as the size
+$\difficulty$ of the smallest possible partition-certificate of the
+instance and use it to analyze the complexity of our algorithm.
+
+If we consider the weighted tree at Figure~\ref{fig:binRelEncodingOfMultiLabeledTree}, the weighted query of  Figure~\ref{fig:TreeQuery} with a threshold-value $\threshold = 5$, and $\maxWeightR = 3$, we get the minimal partition-certificate shown at Figure~\ref{fig:TreeCert}. This partition-certificate contains all three possible types of intervals. The interval $\{2, \ldots, 5\}$ is the whole subtree with the root $\{2\}$ that has enough path-score: $\pathscore (2) = 3 \times 1 + 2 \times 2 = 7 > 5$. The intervals $\{1\}$ and $\{6, \ldots, 8\}$ are intervals that have a subset of labels $S = \{\mbox{Music}, \mbox{Pop}, \mbox{Previews} \}$ not associated with any node and that is large enough to guarantee that no nodes can have path-score of at least $\threshold$: $\maxWeightR \sum_{\labelx \notin S} {\Q (\labelx)} = 3 \times 1 = 3 < 5 = \threshold$. And the interval $\{9\}$ has a set $S \in \{\mbox{Music}, \mbox{Pop}\}$ that is not large enough, but whose single node does not have enough weight either.
+
+\begin{figure}
+  \centering
+  $$\begin{array} {c|c|c|c|c|} \cline{2-5}
+    \mbox{Keywords: ($\labelx \in \Q$)}  & \mbox{Home}  &  \mbox{Music}  &  \mbox{Pop}  &  \mbox{Previews} \\ \cline{2-5}
+    \mbox{Weights: ($\Q (\labelx)$)}  &           1  &             2  &           1  &              1 \\ \cline{2-5}
+  \end{array}$$
+  \caption{An example of the weighted conjunctive query of 4 words.
+    \label{fig:TreeQuery} }
+\end{figure}
+
+\begin{figure}
+  \centering
+  $$  \begin{array}[b]{cc@{}|c|c|c|c|c|c|c|c|c|ccc|cccc|ccc|c} \cline{3-11}
+
+    & 
+&1       &2 & 3 &4                        &     5    &  6       &          7    &      8   &   9                 & & &
+ 1  &  2 &  3 &  4 &  5 &  6 &  7 & 8  &  9   %&      &    
+\\ \cline{3-11} \cline{14-22}
+
+
+    \mbox{Home}  & \rightarrow
+& 3  & . & . & .                             & .       & .      & .           & .      & .                 & & \rightarrow &
+  3  &  * &  * &  * &  * &  * &  * & *  &  * %&   &    
+\\ \cline{3-11}
+    \mbox{Music} & \rightarrow
+    & .       & 2       & .            & .       & .      & . & . & . & .                                  & & \rightarrow &
+  . & 2  &  * & *  &  * & .  &  . &  . & .  %&     &    
+\\ \cline{3-11}
+    \mbox{Pop}   & \rightarrow
+         & .       & .       & .                                & 1      & 1   &.&.&.   & .             & & \rightarrow &
+  . &  . & .  &  1 & 1  & .  & .  &  . &  . %&    
+\\ \cline{3-11}
+    \mbox{Previews} & \rightarrow
+& .           &.&.& .                    & .       & .      & .           & .      & 1                 & & \rightarrow &
+  .  &  . &  . &  . &  . &  . &  . & .  &  1 %&   &    
+\\ \cline{3-11}
+  \end{array}$$
+    \caption{ An example of the minimal partition-certificate for the weighted tree and weighted query described above and the $\threshold = 5$.
+      %
+      This partition-certificate has all three possible types of intervals.
+      % 
+      The alternation of the instance is $\difficulty=4$, the number of intervals of a partition-certificate.
+      \label{fig:TreeCert} }
+\end{figure}
+
+
+Barbay~\etal~\cite{adaptiveSearchingInSuccinctlyEncodedBinaryRelationsAndTreeStructuredDocuments}
+proved that any randomized algorithm performs
+$\Omega(\difficulty\nbkeywords)$ search operations in the worst case
+over (unweighted) path subset queries of $\nbkeywords$ labels and of
+alternation $\difficulty$.
+%
+This is a particular case of weighted
+threshold path-subset queries, where $\maxWeightR = \maxWeightQ = 1$ and
+where the threshold-value $\threshold$ is the number $\nbkeywords$ of labels $\labelx$
+of non-null weight $\Q(\labelx)$.
+%
+We propose an optimal algorithm for the cases with arbitrary values
+for $\maxWeightR$, $\maxWeightQ$ and $\threshold$, restricted only in
+the weights assigned to labels in the multi-labeled tree:
+
+
+\begin{theorem}\label{th:threshold-subset-path}
+  Consider 
+  % 
+  a tree $\tree$, 
+  % 
+  a weighted binary relation
+  $\R:[\nblabels]\times[\nbobjects]\rightarrow\{0,\ldots,\maxWeightR\}$
+  assigning path non-increasing weighted labels to the nodes of
+  $\tree$,
+  % 
+  a weighted query
+  $\Q:[\nblabels]\rightarrow\{0,\ldots,\maxWeightQ\}$, 
+  % 
+  and a non-negative integer $\threshold$.
+  % 
+  % 
+  There is an algorithm that computes the threshold set for $\Q$ on
+  $\tree$ and $\R$ with threshold-value of $\threshold$ in
+  $\bigo(\difficulty\nbkeywords)$ search and priority queue operations, where
+  % 
+  $\difficulty$ is the alternation of the instance and
+  % 
+  $\nbkeywords$ is the number of labels of positive weight in~$\Q$.
+\end{theorem}
+
+\begin{PROOF}
+  \begin{proof}[of Theorem~\ref{th:threshold-subset-path}]
+    Consider the steps of Algorithm~\ref{alg:ThresholdOnLabTree}:
+    given a query $\Q$ with $\nbkeywords$ positive weights and a
+    threshold-value $\threshold$, the algorithm computes the set of
+    the highest nodes with a path-score of at least~$\threshold$ in a
+    tree $\tree$ labeled by a weighted binary relation $\R$.
+
+
+  The algorithm proceeds along the nodes of the tree in increasing
+  order (according to the preorder defined on the tree). At each phase
+  it considers a node $\nodex$ and computes the minimum possible
+  path-score $\scoremin$ and the maximum possible path-score
+  $\scoremax$ for it. If $\scoremin \ge \threshold$, it is in the
+  threshold subset path. The algorithm puts it to the output and
+  starts the next phase by proceeding to the first successor of
+  $\nodex$ that is not one of its descendants, i.e. the algorithm
+  skips the whole subtree rooted with the node $\nodex$.
+%
+  If $\threshold > \scoremax$ the node $\nodex$ is guaranteed to have
+  the path-score smaller than the threshold, thus the algorithm
+  proceeds to the next node in the tree that might be in the threshold
+  subset path finishing the current phase as well.
+
+  The decision about the current node is made based on the division of
+  the set of labels of positive weights into three disjoint sets:
+  $\setYES$, $\setMAYBE$ and $\setNO$.
+  % 
+  \begin{itemize}
+  \item $\setYES$ consists of the labels already known to be
+    associated with the current node $\nodex$ or one of its ancestors.
+  \item $\setMAYBE$ consists of the labels that we do not know yet
+    whether they are associated with the current node $\nodex$ or one
+    of its descendant or not.
+    %
+    This set is implemented as a queue so that each label in it is
+    retrieved equally often.
+  \item $\setNO$ consists of the labels that are known not to be
+    associated with the current node $\nodex$ nor any of its
+    ancestors.
+    %
+    This set is implemented by a priority queue with at most
+    $\nbkeywords$ elements, and the labels in it are ordered by the
+    preorder number of the first $\labelx$-successor $\nodex_\labelx$
+    of the current node $\nodex$.
+  \end{itemize}
+
+  The values of $\scoremin$ and $\scoremax$ here depend not only on
+  the labels assigned to $\nodex$, but also on the labels assigned to
+  its ancestors, and are computed as $\scoremin = \sum_{ \labelx \in
+    \setYES} \Q( \labelx) \max_{ \nodey \in \ancestors(x) \cup\{
+    \nodex\}}{ \R(\labelx, \nodey)}$ and $\scoremax = \scoremin +
+  \sum_{ \labelx \in \setMAYBE} \Q( \labelx) \maxWeightR$.
+
+  After making a decision about the node $\nodex$,
+  Algorithm~\ref{alg:ThresholdOnLabTree} updates the node (through
+  Algorithm~\ref{alg:choiceMLT}) and finds the next node $\nodex$ to
+  advance to. It performs the search for the next node $\nodex$ in the
+  similar to the case of binary relations way, except that now it
+  should move some labels from set $\setNO$ to set $\setMAYBE$ as
+  well, because the node $\nodex$ might have been already increased by
+  Algorithm~\ref{alg:ThresholdOnLabTree}, in the case of the phase
+  where the algorithm is processing an interval consisted of the whole
+  subtree with a root node in the answer set.
+
+
+  %%%%%%%%%%%%%%%%%% ADAPTIVE
+  %%%%%%%%%%%%%%%%%% ANALYSIS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  The complexity analysis of the algorithm is very similar to the one
+  provided in Theorem~\ref{th:threshold-set}. We consider the
+  algorithm at each phase and how it processes each type of intervals
+  in the minimal partition-certificate, and prove that for each phase
+  the algorithm does at most $\bigo(\nbkeywords)$ search and priority
+  queue operations. While the number of intervals is $\difficulty$, we
+  come up with the total complexity of $\bigo(\difficulty
+  \nbkeywords)$.  \qed
+\end{proof}
+\end{PROOF}
+
+  \begin{algorithm}
+    \centering
+    \caption{Algorithm answering Threshold Path-Subset queries }
+    \label{alg:ThresholdOnLabTree}
+    \begin{algorithmic}
+      \STATE Set $\nodex$ to $-\infty$, $\setNO$ and $\setYES$ to
+      $\emptyset$ and $\setMAYBE$ to the set of all labels of non-null
+      weight;
+
+      \STATE
+      \idtt{Update}$(\nodex,\setYES,\setNO,\setMAYBE,\scoremin,\scoremax)$
+      using Algorithm~\ref{alg:choiceMLT};
+
+      \WHILE{$\nodex<\infty$}
+
+      \STATE Set $\labelx$ to the next label from $\setMAYBE$ in round
+      robin order, and deduct $\maxWeightR\Q(\labelx)$ from
+      $\scoremax$;
+
+      % \STATE Search for $\labelx$-ancestors of object $\nodex$;
+
+      \IF{$\nodex$ or one of its ancestors is labeled $\labelx$}
+      \STATE Move $\labelx$ from $\setMAYBE$ to $\setYES$; \STATE Find
+      $\nodey$, the closest to the root ancestor of $\nodex$ with the
+      label $\labelx$; \STATE Add $\Q(\labelx)\R(\labelx,\nodey)$ to
+      $\scoremin$ and $\scoremax$; \IF{$\threshold\leq\scoremin$}
+      \STATE Output $\nodex$; \STATE Update $\nodex$ to its first
+      preorder successor which is not one of its descendants; \ENDIF
+      \ELSE \STATE Move $\labelx$ from $\setMAYBE$ to $\setNO$; \ENDIF
+
+      \IF{$\threshold \le \scoremin$ or $\threshold>\scoremax$} \STATE
+      \idtt{Update}$(\nodex,\setYES,\setNO,\setMAYBE,\scoremin,\scoremax)$;
+      \ENDIF
+
+      \ENDWHILE
+    \end{algorithmic}
+  \end{algorithm}
+
+  \begin{algorithm}
+    \begin{algorithmic}
+      \caption{\idtt{Update}$(\nodex,\setYES,\setNO,\setMAYBE,\scoremin,\scoremax)$}
+      \label{alg:choiceMLT}
+      \STATE Move all the labels from $\setYES$ to the set
+      $\setMAYBE$; \STATE \textbf{Move each label $\labelx$ from
+        $\setNO$ that has $\labelx$-successor less than current node
+        $\nodex$ to the set $\setMAYBE$;} \STATE Set $\scoremax$ to
+      $\sum_{\labelx\in\setMAYBE}\Q(\labelx)\maxWeightR$; \STATE
+      Choose a label $\labelx$ in round-robin order from $\setMAYBE$;
+
+      \WHILE{$\scoremax-\Q(\labelx)\maxWeightR \ge \threshold$} \STATE
+      Deduct $\Q(\labelx)\maxWeightR$ from $\scoremax$, and move
+      $\labelx$ from $\setMAYBE$ to $\setNO$; \STATE Choose a label
+      $\labelx$ in round-robin order from $\setMAYBE$; \ENDWHILE
+
+      \STATE Find the subset $S\subset\setNO$ of labels $\labelx$ such
+      that the preorder successor of $\nodex$ among the nodes labeled
+      $\labelx$ is minimal;
+
+      \STATE Move all the labels of $S$ from $\setNO$ to $\setYES$,
+      and set $\scoremin$ to
+      $\sum_{\labelx\in\setYES}\Q(\labelx)\max_{\nodey\in\ancestors(x)\cup\{\nodex\}}{\R(\labelx,\nodey)}$
+      
+      \STATE Update $\nodex$ to its preorder successor among the nodes
+      labeled $\labelx$, for any label of $\setYES$;
+    \end{algorithmic}
+  \end{algorithm}
+
+
+
+
+
+
+
+
+
+\section{Twig Pattern Matching Queries}
+\label{sec:twig-patt-match}
+
+
+\begin{EXAMPLE}
+Consider the task of searching in a medical file for all patients to
+whom have been administrated a test $Y$ after having been given a
+given medicine $X$.
+% 
+This can be expressed as a structural query, requiring the list of
+nodes labeled \patient, in which subtree a node labeled \prescription\
+with a child labeled \medicine\ $X$ precedes a node labeled \test\
+with a child labeled \result\ $Y$.
+% 
+In the query of Figure~\ref{fig:simpleExample}, vertical arrows
+correspond to child relations, diagonal arrows to descendant
+relations, and the horizontal arrow correspond to a following
+relation.
+%
+In the document of Figure~\ref{fig:simpleExample}, the edges all
+represent parent-child relations.
+
+\begin{figure}
+    \begin{minipage}[b]{.2\textwidth}
+        \begin{tabular}{ccc}
+                                             & \node{Qpatient}{\patient}      \\ 
+                                                                             \\ \\
+          \node{Qprescription}{\prescription} &  & \node{Qtest}{\test}         \\
+                                                                             \\ \\
+          \node{Qmedicine}{\medicine\ $X$}     &  & \node{Qresult}{\result\ $Y$} \\
+        \end{tabular}
+%
+        \nodeoval{Qpatient} \anodeconnect{Qpatient}{Qprescription}
+        \anodeconnect{Qpatient}{Qtest}
+        \anodeconnect{Qprescription}{Qmedicine}
+        \anodeconnect{Qtest}{Qresult}
+        \anodeconnect[r]{Qprescription}[l]{Qtest}
+%
+    \end{minipage}
+%
+%    \hfil
+%
+    \begin{minipage}[b]{.4\textwidth}
+        \Tree [ .{\medfile} [ .{$\dots$ \node{Dpatient}{\patient}
+          $\dots$} [ .{$\dots$ \history $\dots$} [ .{\test} $\dots$
+        {result $Y$} $\dots$ ] [ .{\prescription} $\dots$
+        \node{Dmedicine}{\medicine\ $X$} $\dots$ ] [ .{\test} $\dots$
+        \node{Dresult}{\result\ $Y$} $\dots$ ] ] ] ]
+      \makedash{4pt} \anodecurve[t]{Qpatient}[l]{Dpatient}{1cm}
+      \anodecurve[b]{Qmedicine}[b]{Dmedicine}{1cm}
+      \anodecurve[b]{Qresult}[b]{Dresult}{1cm}
+    \end{minipage}
+%
+\caption{A simple query, on a subset of a medical database.}
+\label{fig:simpleExample}
+\end{figure}
+\end{EXAMPLE}
+
+
+\begin{definition}[XPathPlus Query]
+  Given an XML document $D$, and an oriented graph $G$ of $\nbedges$
+  edges in which one node $\dist(G)$ is distinguished, and all edges
+  are labeled by location steps, give the list of nodes of $D$
+  matching $\dist(G)$ in the context described by the location steps
+  of $G$.
+\end{definition}
+
+\begin{EXAMPLE}
+For instance, in the example given in Figure~\ref{fig:simpleExample},
+the only visible \patient\ does match the query, in particular because
+of the \prescription\ node and of the second \test\ node.
+%
+As there is an order constraint in the query between the
+\prescription\ node and the \test\ node, the first \test\ node does
+not match the pattern: if it was the only \test\ node in this subtree,
+the \patient\ node wouldn't match the query.
+\end{EXAMPLE}
+
+\subsection{Notations}
+
+We denote types of nodes using Greek lower case letters
+(e.g. $\alpha$), all in the set $\Sigma$.
+%
+For conciseness, we will note ``$\alpha$-node'' a node of type
+$\alpha$, ``$\alpha$-descendant'' a descendant of type $\alpha$, and
+so on for each relation.
+%
+When talking about a particular $\alpha$-node , we denote it by the
+corresponding Latin letter, (e.g. $a$ for $\alpha$). A node of unknown
+type is denoted by $x$.
+%
+Given an edge $(\alpha,r,\beta)$, the notation $\fits{a}{r}{b}$
+indicates that $b$ is a $\beta$-node in relation $r$ with the
+$\alpha$-node $a$ (e.g. $\fits{a}{desc}{b}$ indicates that $b$ is a
+descendant of $a$).
+
+\begin{figure}
+\begin{center}
+\begin{tabular}{ccc}
+&\node{Qpatient}{patient}\\ 
+\\ \\
+\node{Qprescription}{prescription} && \node{Qtest}{test} \\
+\\ \\
+\node{Qmedecine}{medicine $X$} && \node{Qresult}{result $Y$} \\
+\end{tabular}
+%
+\nodeoval{Qpatient}
+\anodeconnect{Qpatient}{Qprescription}
+\anodeconnect{Qpatient}{Qtest}
+\anodeconnect{Qprescription}{Qmedecine}
+\anodeconnect{Qtest}{Qresult}
+\anodeconnect[r]{Qprescription}[l]{Qtest}
+%
+{ \makedash{4pt}
+ \anodecurve[l]{Qpatient}[tl]{Qprescription}{1cm}
+ \anodecurve[bl]{Qprescription}[tl]{Qmedecine}{.2cm}
+ \anodecurve[tr]{Qmedecine}[br]{Qprescription}{.2cm}
+ \anodecurve[tr]{Qprescription}[tl]{Qtest}{.2cm}
+ \anodecurve[bl]{Qtest}[tl]{Qresult}{.3cm}
+ \anodecurve[tr]{Qresult}[br]{Qtest}{.2cm}
+ \anodecurve[tr]{Qtest}[r]{Qpatient}{1cm}
+}
+%
+\end{center}
+\vspace{1cm}
+\caption{A tour of the query given Fig~\ref{fig:simpleExample}.}
+\label{fig:simpleTour}
+\end{figure}
+
+
+We define a ``tour'' of the query $Q$ (denoted by ``$\tour(Q)$'') as a
+cyclic path of minimal length visiting each edge (and as a consequence
+visiting each node) of the query, following edges without any orientation
+constraint.
+%
+It is trivial to see that such a tour is at least of length $k$, the
+number of edges forming the query, and at most of length $2k$.
+%
+The complexity of following such a tour depends of the query but is
+independent of the size and content of the database.
+
+
+
+\subsection{Certificates}
+
+
+Consider the structural query given in Figure~\ref{fig:simpleExample}.
+%
+One possible tour of it is given in Figure~\ref{fig:simpleTour}: it
+simply visits the nodes of the query in pre-order. 
+%
+Its length is $7$, which is as expected between $k=5$ and $2k=10$: it
+would be only $k$ if the graph was a cycle itself (or a composition of
+cycles), and it would be exactly $2k$ if the graph was acyclic.
+
+Suppose that the document of Figure~\ref{fig:simpleExample} contains
+no other node of type \prescription\ than the apparent one.
+%
+Then, any algorithm can {\em certify} that the visible \patient\ node
+is the only one matching the query in $5$ operations.
+
+\begin{figure}
+\begin{center}
+\Tree
+  [ .{medfile} 
+    [ .{$\dots$ \node{Dpatient}{patient} $\dots$}
+       [ .{$\dots$ history $\dots$}
+	 [ .{test} $\dots$ {result $Y$} $\dots$ ] 
+	 [ .\node{Dprescription}{prescription} $\dots$ \node{Dmedecine}{medicine $X$} $\dots$ ] 
+	 [ .\node{Dtest}{test} $\dots$ \node{Dresult}{result $Y$} $\dots$ ] 
+       ]
+    ]
+  ]
+{ \makedash{4pt}
+ \anodecurve[l]{Dpatient}[tl]{Dprescription}{1cm}
+ \anodecurve[bl]{Dprescription}[tl]{Dmedecine}{.2cm}
+ \anodecurve[tr]{Dmedecine}[br]{Dprescription}{.2cm}
+ \anodecurve[tr]{Dprescription}[tl]{Dtest}{.2cm}
+ \anodecurve[bl]{Dtest}[tl]{Dresult}{.3cm}
+ \anodecurve[tr]{Dresult}[br]{Dtest}{.2cm}
+ \anodecurve[tr]{Dtest}[r]{Dpatient}{1cm}
+}
+\end{center}
+\caption{An execution trace.}
+\label{fig:simpleExecution}
+\end{figure}
+
+
+
+\subsection{Correlation}
+
+To make the task easier, one can take advantage of known {\em
+correlations} between elements of the query.
+%
+\begin{EXAMPLE}
+  For instance, it is likely that \result\ nodes are {\em always}
+  descendants of \test\ nodes, while \medicine\ nodes are not always
+  descendants of \prescription\ nodes.
+%
+  Knowing that, an algorithm would first reduce the list of \medicine\
+  nodes by comparing it to the list of \prescription\ nodes, rather
+  than combining the lists of \result\ nodes and \test\ nodes, which
+  does not give any information.
+\end{EXAMPLE}
+%
+Such information can make the instance very easy, and is essential for
+algorithms solving XPath queries based on the relational model.
+%
+We claim that an holistic algorithm, which is not limited to consider
+each edges of the query separately, can perform well without this
+correlation information, and potentially better on instances where the
+correlation is highly irregular.
+
+In the context of XPath queries, consider an algorithm inspired from
+\idtt{Small\_Adaptive}~\cite{dlmAlenex}, which elimitates the maximum
+number of document nodes possible for each edge from the query, and
+cycles through these edges in a tour of the query.
+%
+This algorithm spends the least time on edges of the query
+corresponding to correlated sets of nodes, and it will find the most
+adequate edge in at most $\nbedges$ iterations: such algorithm does
+not need the correlation information to escape edges corresponding to
+correlated pair of sets.
+
+Moreover, on the instances where the correlation is non uniform, where
+an edge is correlated in a first half of the tree but not in the
+second half of the tree, correlation statistics only capture an
+average image of the difficulty of the instance, while a holistic
+algorithm can adapt online to the variations in the correlations.
+
+\begin{verbatim}
+Develop with an example here.
+\end{verbatim}
+
+
+
+\subsection{Alternation}
+
+The task of finding patterns in XML documents is similar to the
+Intersection problem in that the difficulty of the instances can vary
+a lot, even for documents and queries of fixed sizes, and even for
+patterns matching only a few nodes of the document.
+%
+\begin{EXAMPLE}
+  For instance, in the document presented in
+  Figure~\ref{fig:simpleExample}, call $X$ the list of patients who
+  have been prescribed medicine~$X$, and~$Y$ the list of patients who
+  received the test~$Y$.
+  % 
+  Solving the query requires {\em at least} to compute the
+  intersection of the sets $X\cap Y$.
+\end{EXAMPLE}
+%
+In this analogy, the correlation corresponds to the {\em size} of
+partial intersections.
+%
+This is a valid measure of difficulty, but better alternatives have
+been defined\footnote{See the
+Introduction.}~\cite{dlm,adaptiveIntersectionAndTThresholdProblems,optimalityOfRandomizedAlgorithmsForTheIntersectionProblem}.
+%
+We define our measure of difficulty by analogy with the work of Barbay
+and Kenyon~\cite{adaptiveIntersectionAndTThresholdProblems}:
+%
+\begin{definition}[Alternation $\delta$]
+The number of operations that a non-deterministic algorithm requires
+to check the results of the query.
+\end{definition}
+
+The algorithm described in the previous Section is not taking advantage of this measure.
+%
+We propose Algorithm~\ref{alg:XPathPlus} instead, which is
+asymptotically optimal for instances of fixed alternation and large
+size.
+%
+It traverses cyclically the graph composing the query, following such
+a tour of the edges, starting from the distinguished node (denoted by
+``$\dist(Q)$'') of the query.
+%
+It matches consecutively each query node $\alpha$ with a tree-node
+$a$, such that every $\alpha$-node preceding $a$ in the document order
+has already been considered.
+%
+For each edge $(\alpha,r,\beta)$ of the query, when $\alpha$ is
+already matched with an $\alpha$-node $a$, the algorithm accesses the
+index to find the first available $\beta$-node $b$ preceding all
+$\beta$-nodes in relation $r$ from any successor of $a$, or $\infty$
+if there is no such node in the document, the answer from the index
+being noted $I(a,r,\beta)$.
+
+
+After a tour where $|\tour(Q)|$ matches have been successfully
+checked, the algorithm has found a match for $Q$ and can add the
+document node corresponding to the distinguished query node to its
+result set. To allow the search to continue, it then updates $a$ to
+the next $\alpha$-node likely to be part of a match, and iterates.
+%
+As at any time all the document nodes preceding $a$ in document order
+have been considered, when the algorithm terminates (because
+$a=\infty$), all $\alpha$ nodes have been considered and no other
+match can be found.
+%
+As seen in the proof of Theorem~\ref{th:complexity}, the algorithm
+terminates after a finite number of iterations.
+
+
+\begin{algorithm}
+\caption{{\tt XPathPlus$(Q,I)$}}
+\label{alg:XPathPlus}
+Given a structural query $Q$ and the index $I$ of a document;
+%
+the function computes in $R$ the list of nodes matching $Q$.
+\medskip\hrule
+\begin{minipage}{.49\textwidth}
+\begin{algorithmic}
+\STATE $R\leftarrow\emptyset$; $\alpha\leftarrow\dist(Q)$;  $s\leftarrow0$;
+\STATE $a\leftarrow$ the first available $\alpha$-node of the document.
+\WHILE{$a\neq\infty$}
+  \STATE $(\alpha,r,\beta) \leftarrow$ the next edge of $\tour(Q)$;
+  \STATE $b \leftarrow I(a,r,\beta)$
+% the first available $\beta$-node preceding all $B$-nodes in relation $r$ from any successor of $a$,
+% or \infty if there is no such thing.
+  \IF{ $\fits{a}{r}{b}$ } 
+     \STATE $s\leftarrow s+1$;
+     \IF{$s=|\tour(Q)|$}
+       \STATE $\alpha\leftarrow\dist(Q)$; $a\leftarrow$ the corresponding $\alpha$-node;
+       \STATE $R\leftarrow R\cup\{a\}$;
+       \STATE $a\leftarrow$ the first $\alpha$ successor of $a$, or $\infty$;
+     \ENDIF
+  \ELSE
+    \STATE $s\leftarrow 0$;
+  \ENDIF
+  \STATE $(\alpha,a)\leftarrow(\beta,b)$; 
+\ENDWHILE 
+\STATE {\bf return} $R$;
+\end{algorithmic}
+\end{minipage}
+\end{algorithm}
+
+
+
+
+
+\subsection{Upper bound}
+
+\begin{theorem}\label{th:complexity}
+Given a labeled tree and a structural query of $k$ edges forming an
+instance of non-deterministic complexity $\delta$, Algorithm {\tt
+SolveQuery} (Alg.~\ref{alg:XPathPlus}) performs no more than $2\delta
+k$ calls to the index.
+\end{theorem}
+
+\begin{proof}
+As the non-deterministic complexity of the instance is $\delta$, there
+is a sequence of $\delta$ operations which allows to compute and
+certify the result of the query.
+%
+By touring the structural query, the algorithms is bound to execute at
+least one of those non-deterministic operations every $|\tour(Q)|$
+deterministic operations, and hence to compute and certify the result
+of the query in at most $\delta |\tour(Q)|$ calls to the operators of
+$I$.
+%
+As the length of such a tour cannot be larger that twice the number
+$k$ of edges forming the query, we get the desired result.
+\qed\end{proof}
+
+This analysis, which takes into account the size of the query and the
+non-deterministic complexity of the instance, but not the size of the
+tree, is called an {\em adaptive}
+analysis~\cite{estivillcastro92survey,petersson,adaptiveIntersectionAndTThresholdProblems}.
+% 
+It is comparable to the competitive analysis used on on-line problems,
+in the sense that the algorithm is compared to an omniscient
+algorithm.
+%
+By analogy to the competitive ratio which normalizes the performance of
+an online algorithm by the performance of the best omniscient
+(offline) algorithm on the same instance, the ``adaptive ratio'' would
+here be $2k$.
+%
+
+\subsection{Lower bound}
+
+Moreover, we shall prove that no deterministic nor randomized
+algorithm can perform significantly better.
+%
+Instances can differ in difficulty (here the non-deterministic
+complexity), even when they are composed of the same query and of
+trees of the same size (see Fig.~\ref{fig:easyCase}
+and~\ref{fig:lowerBound}, or Fig.~\ref{fig:easyInstance}
+and~\ref{fig:difficultInstance} for a smaller example).
+
+
+Instances of larger size can exhibit larger differences in
+difficulties.
+%
+For instance, consider a query such as given
+Figure~\ref{fig:queryForLowerBound}, of $k$ edges forming a straight
+branch of child relations.
+%
+For any integer $\delta\geq1$, there are two instances of size
+$1+\delta(k+2)$ such that one has non-deterministic complexity $1$ and
+the other one has non-deterministic complexity $\delta$:
+Figures~\ref{fig:easyCase} and~\ref{fig:lowerBound} give two such
+examples.
+
+The easy instance (Fig.~\ref{fig:easyCase}) can be solved by one
+single operation: no $\alpha$-node have a $\beta$-descendant so none
+can have a $\beta$-child. Hence such an instance has no match for the
+query: a non-deterministic algorithm can check this with one single
+call to the index.
+
+The more difficult instance (Fig.~\ref{fig:lowerBound}) requires much
+more work, even for a non-deterministic algorithm. Obviously each
+$\zeta$-node ($z_1,\ldots,z_\delta$) prevents the branch containing it
+to form a match for the query, but each is disabling only one branch,
+hence even a non-deterministic algorithm would need $\delta$
+operations to prove that this tree does not present any match of the
+pattern.
+
+\begin{figure*}[ht]
+\begin{minipage}[b]{.3\textwidth}\begin{center}
+\Tree
+[ .{$r$}
+  [ .{$a_1$} [ .{$a_2$} [ .{$\vdots$} {$a_\delta$}   ] ] ]
+  [ .{$b_1$} [ .{$b_2$} [ .{$\vdots$} {$b_\delta$}   ] ] ]
+  [ .$\dots$ [ .$\dots$ [ .{$\vdots$} $\dots$   ] ] ]
+  [ .{$f_1$} [ .{$f_2$} [ .{$\vdots$} {$f_\delta$}   ] ] ]
+  [ .{$z_1$} [ .{$z_2$} [ .{$\vdots$} {$z_\delta$}   ] ] ]
+]
+\caption{Each branch of the tree contains all nodes of the same
+type. To solve such a query, our algorithm performs $k+1=8$ operations
+before asking for an $\varepsilon$-ancestor of $f_1$.}
+\label{fig:easyCase}
+			\end{center}
+\end{minipage}
+%
+ \hfil
+%
+\begin{minipage}[b]{.3\textwidth}\begin{center}
+\begin{tabular}{c}
+\node{alpha}{$\alpha$} \\ \\ \node{beta}{$\beta$} \\ \\ \node{gamma}{$\gamma$} \\ \\ \node{delta}{$\delta$} \\ \\ \node{epsilon}{$\varepsilon$} \\ \\ \node{phi}{$\phi$}
+\end{tabular}
+\nodeoval{alpha}
+\anodeconnect{alpha}{beta}
+\anodeconnect{beta}{gamma}
+\anodeconnect{gamma}{delta}
+\anodeconnect{delta}{epsilon}
+\anodeconnect{epsilon}{phi}
+			\end{center}
+\caption{A very simple query. Each vertical edge corresponds to a child relation. The distinguished node is the root. There are $6$ nodes and $k=5$ edges.}
+\label{fig:queryForLowerBound}
+\end{minipage}
+%
+ \hfil
+%
+\begin{minipage}[b]{.3\textwidth}\begin{center}
+\Tree
+[ .$r$
+  [ .$a_1$ [ .$b_1$ [ .$c_1$ [ .$d_1$ [ .$e_1$ [ .$\bf z_1$ $f_1$  ] ] ] ] ] ]
+  [ .$a_2$ [ .$b_2$ [ .$c_2$ [ .$\bf z_2$ [ .$d_2$ [ .$e_2$ $f_2$  ] ] ] ] ] ]
+  [ .$a_3$ [ .$\bf z_3$ [ .$b_3$ [ .$c_2$ [ .$d_3$ [ .$e_3$ $f_2$  ] ] ] ] ] ]
+  [ .$\ \cdots\ $ [ .$\cdots$ [ .$\cdots$ [ .$\cdots$ [ .$\cdots$ [ .$\cdots$ $\cdots$ ] ] ] ] ] ]
+  [ .$a_{\delta}$ [ .$b_\delta$ [ .$\bf z_\delta$ [ .$c_\delta$  [ .$d_\delta$ [ .$e_\delta$ $f_\delta$  ] ] ] ] ] ]
+]
+\caption{In each branch of the tree can be found nodes matching all
+but one edge of the query.  Any algorithm must perform
+$\Omega(\delta{k})$ operation to solve such instances.}
+\label{fig:lowerBound}
+			\end{center}
+\end{minipage}
+\end{figure*}
+
+As for deterministic algorithms, which cannot guess as well as a
+non-deterministic algorithm, they perform much worse.
+\begin{theorem}\label{th:lowerBound}
+For any values of $k\geq2,\delta\geq2$, to each deterministic
+algorithm $A$ corresponds at least one query of $k$ edges and a
+document of $1+\delta (k+2)$ nodes forming an instance of
+non-deterministic complexity $\delta$ such that $A$ performs at least
+$\delta{k}$ operations to solve it.
+\end{theorem}
+\begin{proof}
+A simple adversary argument gives the result: consider a query of $k$
+edges defined as in Figure~\ref{fig:queryForLowerBound}, and an
+adversary building a tree of $1+\delta (k+2)$ nodes similar to the one
+described in Figure~\ref{fig:lowerBound}, in such a way that it forces
+the deterministic algorithm to perform $k$ operations before finding a
+$\zeta$-node $z$.
+\qed\end{proof}
+
+And randomized algorithms perform better only by a constant factor of two:
+\begin{theorem}\label{th:randomizedLowerBound}
+For any values of $k\geq2,\delta\geq2$, there is a query of $k$ edges
+and a distribution of trees of $1+\delta (k+2)$ nodes forming a
+distribution of instances of non-deterministic complexity $\delta$
+such that any deterministic or randomized algorithm performs
+$\delta k/2 = \Omega(\delta k)$ operations on average to solve an instance.
+\end{theorem}
+\begin{proof}
+The argument is slightly more technical, but still uses the same
+query, and uses trees similar to the one given in
+Figure~\ref{fig:lowerBound}.
+%
+Consider the query of $k$ edges and $k+1$ nodes forming a straight
+branch of child relations, in the order $\alpha_0,\ldots,\alpha_{k}$;
+%
+and a distribution on trees with root $r$, $\delta$
+$\alpha_1$-children and $\delta$ corresponding branches, such that
+each branch almost matches the query, but for a $\zeta$ node inserted
+at a position uniformly chosen between one and $k$.
+%
+Note that such trees are all of size $1+\delta (k+2)$.
+
+Any deterministic algorithm will perform on average at least $k/2$
+operation before finding the $\zeta$-node in a particular branch and
+thus proving that the branch does not match the query.
+%
+As the position of the $\zeta$-node is chosen independently in each
+branch, any deterministic algorithm performs on average at least
+$\delta k/2$ operation to solve an instance.
+%
+By the minimax principle~\cite{yao,vonneumann1944}, this lower bound
+is extended to randomized algorithms.
+\qed\end{proof}
+
+
+
+\begin{figure}
+\begin{minipage}[t]{.48\textwidth}
+\begin{center}
+ \Tree 
+[ .$c$
+   $a_1$
+   $a_2$
+   $b_1$
+   $b_2$
+]
+\caption{On such a tree, 
+$I(a_1,DESC,\beta)$
+%$=DESC(a_1,\beta)$ 
+would return $b_1$, and
+$I(b_1,ANC,\alpha)$
+%$=ANC(b_1,\alpha)$ 
+would return $\infty$, proving in two operation that
+no $\alpha$-node is an ancestor of some $\beta$-node.}
+\label{fig:easyInstance}
+\end{center}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{.48\textwidth}
+\begin{center}
+ \Tree 
+[ .$c$
+   $a_1$
+   $b_1$
+   $a_2$
+   $b_2$
+]
+\caption{On such a tree, 
+$I(a_1,DESC,\beta)$
+%$=DESC(a_1,\beta)$ 
+would still return $b_1$,
+but 
+$I(b_1,ANC,\alpha)$
+%$=ANC(b_1,\alpha)$ 
+would return $a_2$, hence requiring two more
+operations to prove that no $\alpha$-node is an ancestor of some
+$\beta$-node.}
+\label{fig:difficultInstance}
+\end{center}
+\end{minipage}
+\end{figure}
+
+
+
+\section{Labeled Least Common Ancestor Queries}
+\label{sec:labeled-least-common}
+
+\begin{LONG}
+  \subsection{Ordinal LCA}
+\label{sec:ordinal-lca}
+\end{LONG}
+
+Considering only the structure of the tree, the {\em ordinal Lowest
+  Common Ancestor} (LCA) of $\nbkeywords$ nodes
+$\nodex_1,\ldots,\nodex_\nbkeywords$ is the lowest common node
+$\LCA(\nodex_1,\ldots,\nodex_\nbkeywords)$ in common between the paths
+from each node $\nodex_i$ to the root.
+%
+\begin{SHORT}
+  It can be computed in constant time in the indexed model using an
+  index of size asymptotically
+  negligible~\cite{succinctRepresentationsOfLCPInformationAndImprovementsInTheCompressedSuffixArrays}.
+  % 
+  We show in Section~\ref{sec:top-down-algorithm} that it can be
+  computed in constant amortized time in the context of streamed
+  documents.
+\end{SHORT}
+% 
+\begin{LONG}
+  LCA queries on labeled trees have been studied by the database
+  community in the context of schema-free queries on XML documents.
+%
+  The techniques used consist in choosing the encoding of the tree so
+  that the LCA can be computed quickly.
+%
+  One technique often used is based on Dewey numbers, which represent
+  the path to each node, reduce the LCA Problem to finding the common
+  prefix of two paths, which takes time linear in the length of the
+  smallest path.
+ 
+LCA queries on ordinal trees were first studied by Harel and
+Tarjan~\cite{fastAlgorithmsForFindingNearestCommonAncestors}., and
+later on by Schieber and
+Vishkin~\cite{onFindingLowestCommonAncestorsSimplificationAndParallelization},
+Wen~\cite{newAlgorithmsForTheLCAProblemAndTheBinaryTreeReconstructionProblem},
+and Bender {\em et
+  al.}~\cite{theLevelAncestorProblemSimplified,findingLeastCommonAncestorInDirectedAcyclicGraphs}.
+%
+They defined
+the {\em ordinal Lowest Common Ancestor} (LCA) of $\nbkeywords$ nodes
+$\nodex_1,\ldots,\nodex_\nbkeywords$ as the lowest common node
+$\LCA(\nodex_1,\ldots,\nodex_\nbkeywords)$ between the paths from
+each node $\nodex_i$ to the root.
+
+It is a fundamental algorithmic problem on trees and has been
+extensively
+studied~\cite{fastAlgorithmsForFindingNearestCommonAncestors,
+  onFindingLowestCommonAncestorsSimplificationAndParallelization,
+  newAlgorithmsForTheLCAProblemAndTheBinaryTreeReconstructionProblem,
+  findingLeastCommonAncestorInDirectedAcyclicGraphs}.
+
+The technique allowing to compute it quickly consists in choosing an
+adequate encoding of the tree: for instance Dewey numbers, which
+represent the path to each node, reduce the LCA Problem to finding the
+common prefix of two paths.
+%
+Using some more sophisticated off-line precomputation, the LCA of two
+nodes can be computed in constant
+time~\cite{newAlgorithmsForTheLCAProblemAndTheBinaryTreeReconstructionProblem,
+  findingLeastCommonAncestorInDirectedAcyclicGraphs}.
+
+The technique introduced by Harel and
+Tarjan~\cite{fastAlgorithmsForFindingNearestCommonAncestors} and later
+refined consists in precomputing the answer to some queries (an
+index), and to use those precomputed answers to answer the future
+queries in constant time.
+%
+One of the latest results about LCA is due to Bender, Farach-Colton,
+Pemmasani, Skiena, and
+Sumazin~\cite{findingLeastCommonAncestorInDirectedAcyclicGraphs}, who
+precompute in linear time a structure of $O(\nbnodes)$ words (i.e.
+$O(\nbnodes\lg\nbnodes)$ bits) using dynamic programing, so that they
+support in constant time LCA on a tree of $\nbnodes$ nodes.
+%
+Sadakane~\cite{succinctRepresentationsOfLCPInformationAndImprovementsInTheCompressedSuffixArrays}
+improves this to precompute the largest common prefix length of
+suffixes in $6\nbnodes+o(\nbnodes)$ bits and implicitly defines a tree
+encoding using $2\nbnodes+o(\nbnodes)$ to support LCA in constant
+time.
+\end{LONG}
+
+
+
+\begin{LONG}
+  \subsection{Previous Work}
+  \label{sec:lca}
+
+Schmidt, Kersten and Windhouwer~\cite{nearestConceptQueries} observe
+that requiring the user to know the schema is impractical and
+unrealistic, and that content queries are insufficient.
+%
+They suggest instead unstructured queries interpreted in regard to the
+structure of the document, and define the {\em Lowest Common Ancestor
+  set} of $\nbkeywords$ labels $\lab_1,\ldots,\lab_\nbkeywords$ as
+the set $\LCASET(\lab_1,\ldots,\lab_\nbkeywords)$ such that the
+subtrees rooted at each node of this set partition all nodes matching
+at least two labels without intersecting each other.
+
+
+%\subsection{Meaningful LCA}
+\label{sec:mlca}
+
+Li, Yu and Jagadish~\cite{schemaFreeXQuery} observe that the answer to
+LCA queries is sometime meaningless, because the level of relevance of
+the nodes matching some labels vary too much.
+%
+They propose to return only the most relevant nodes matching the
+query, through the {\em Meaningful Lowest Common Ancestor} set of
+$\nbkeywords$ labels $\lab_1,\ldots,\lab_\nbkeywords$, defined as
+the set $\MLCASET(\lab_1,\ldots,\lab_\nbkeywords)$ of nodes matching
+at least two labels which corresponding subtree does not contain any
+other node matching at least two labels.
+
+The distinction with the previous queries is that the nodes returned
+by a \LCASET\ query cover all nodes matching the labels, while the
+\MLCASET\ query rejects nodes which match the labels but are judged
+too general because some of their descendants are already matching
+those labels.
+
+
+%\subsection{Smallest LCA}
+\label{sec:slca}
+
+Xu and
+Papakonstantinou~\cite{efficientKeywordSearchForSmallestLCAsInXMLDatabases}
+go further in restricting the answer set of the queries, by requesting
+that the nodes match {\em all labels}.
+%
+As Li {\em et al.}, they don't consider all such nodes but reduce the
+answer to the most meaningful nodes, forming the {\em Smallest Lowest
+  Common Ancestor} set of $\nbkeywords$ labels
+$\lab_1,\ldots,\lab_\nbkeywords$: the set
+$\SLCASET(\lab_1,\ldots,\lab_\nbkeywords)$ of nodes such that the
+subtrees rooted at each node of this set partition all nodes matching
+$\lab_1,\ldots,\lab_\nbkeywords$ without intersecting each other.
+
+They also extended their algorithm to compute the list of nodes
+matching $\nbkeywords$ distinct labels, hence introducing a new query.
+
+\begin{definition}[\ALCASET\
+  queries~\cite{efficientKeywordSearchForSmallestLCAsInXMLDatabases}]
+  The set of {\em All Lowest Common Ancestors} corresponding to
+  $\nbkeywords$ labels $\lab_1,\ldots,\lab_\nbkeywords$ is the set
+  $\ALCASET(\lab_1,\ldots,\lab_\nbkeywords)$ of nodes matching
+  $\lab_1,\ldots,\lab_\nbkeywords$.
+\end{definition}
+
+\end{LONG}
+
+\begin{SHORT}
+  The concept of the lowest common node between two nodes as a good
+  representative of those nodes proved to be fruitful in the context
+  of schema-free queries, where the structure of the document is
+  unknown or ignored.
+  % 
+  The main idea is, given a set of labels constituting the query, to
+  find a subset of nodes in the tree which are {\em representative} of
+  the set of nodes matching the labels.
+  % 
+  In this context, a node $\nodex$ is said to {\em match} a label
+  $\labelx$ if there is a node labeled $\labelx$ in the subtree rooted
+  in $\nodex$.
+%
+  Schmidt~\etal~\cite{nearestConceptQueries} were the first to use
+  this concept, defining queries on $\nbkeywords$ labels answered by a
+  set of nodes $\LCASET(\lab_1,\ldots,\lab_\nbkeywords)$ such that the
+  subtrees rooted at each node of this set partition all nodes
+  matching at least two labels without intersecting each other.
+  % 
+  Dissatisfied with the relevance of the answer of this type of query
+  for their applications, Li~\etal~\cite{schemaFreeXQuery} suggested
+  to return instead the set $\MLCASET(\lab_1,\ldots,\lab_\nbkeywords)$
+  of nodes matching at least two labels, and which corresponding
+  subtrees do not intersect each other.
+  % 
+  This approach was in turn extended by Xu and
+  Papakonstantinou~\cite{efficientKeywordSearchForSmallestLCAsInXMLDatabases},
+  who proposed to return instead the set
+  $\SLCA(\lab_1,\ldots,\lab_\nbkeywords)$ of nodes matching {\em all
+    the labels}, and which corresponding subtrees do not intersect
+  each other.
+\end{SHORT}
+  
+
+
+
+\begin{LONG}
+  \subsection{Threshold Labeled LCA}
+  \label{sec:thresh-label-lca}
+\end{LONG}
+
+We propose a fourth type of query, generalizing both {\MLCASET} and
+{\SLCA} query-types.
+% 
+Whereas {\MLCASET} queries require two labels to be matched by each
+node of the answer, and {\SLCA} queries require all of the labels to
+be matched, we {\em parametrize} the amount of labels that a node of
+the answer should match, and consider {\em weights} associated to each
+label to measure the relevance of each label to the answer.
+% 
+\begin{definition}
+  \label{def:TLLCA-queries}
+  Consider a tree $T$ labeled by a binary relation
+  $\R:[\nbnodes]\times[\nblabels]\rightarrow\{0,1\}$, a query
+  $\Q:[\nblabels]\rightarrow\{0,\ldots,\maxWeightQ\}$, a node
+  $\nodex$ of the tree, and a positive number   $\threshold$.
+  
+  \begin{itemize}
+  \item The {\em score} of $\nodex$ is the sum of the weights of the
+    labels associated to $\nodex$ or at least to one of its
+    descendants: 
+    $$\score(x) = \sum_{\labelx\in[\nblabels]} \Q[\labelx] \max_{\nodey\mbox{ descendant of }\nodex}\R(\nodey,\labelx)$$
+
+  \item the answer to a {\em Threshold Labeled LCA query} ({\TLLCA}) is
+    the set of nodes $\nodex$ such that $\nodex$'s score is at least
+    $\threshold$ and no descendant of $\nodex$ matches the previous
+    condition.
+
+  \end{itemize}  
+\end{definition}
+
+
+By definition, when the weights are all equal to zero or one, the
+answer to such a query corresponds to the answer of a {\MLCASET} query
+for $\threshold=2$, and to the answer of a {\SLCA} query for
+$\threshold=\nbkeywords$.
+%
+This extension of the query-type to its weighted variant can be used
+to automatically personalize user queries: given a set of labels input
+by the user, assign them a normal weight and add to them several
+labels of small weights defining the profile of the user.
+
+
+
+
+
+\section{Perspectives}
+\label{sec:perspectives}
+
+XPath?
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "adaptiveAnalysisOfAlgorithm"
+%%% End: 

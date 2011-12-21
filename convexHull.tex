@@ -1,0 +1,385 @@
+%%
+%% convexHull.tex
+%% 
+%% Made by Jeremy Barbay
+%% Login   <jbarbay@condorito>
+%% 
+%% Started on  Thu Apr 10 17:40:00 2008 Jeremy Barbay
+%% Last update Thu Apr 10 17:40:00 2008 Jeremy Barbay
+%%
+
+\chapter{Convex Hull}
+\label{cha:convex-hull}
+
+Given a finite set~$S$ of points, the {\em convex hull} is the
+smallest convex polygon containing~$S$.
+%
+% From wikipedia http://en.wikipedia.org/wiki/Convex_hull
+The problem of finding convex hulls finds its practical applications
+in pattern recognition, image processing, statistics and GIS. It also
+serves as a tool, a building block for a number of other
+computational-geometric algorithms.
+%
+\begin{LONG}
+  For example, consider the problem of finding the diameter of a set
+  of points, which is the pair of points a maximum distance apart.
+  %
+  The diameter will always be the distance between two points on the
+  convex hull.
+  %
+  The $\bigo(n\lg n)$ algorithm for computing the diameter proceeds
+  by first constructing the convex hull, then for each hull vertex
+  finding which other hull vertex is farthest away from it.
+  %
+  This so-called "rotating-calipers" method can be used to move
+  efficiently from one hull vertex to another.
+
+
+  \begin{table}
+    \centering
+    \begin{tabular}{ccp{5cm}cc}
+      1972 &
+      Graham's Scan &
+      An efficient algorithm for determining the convex hull of a finite planar set. &
+      $\bigo(n\lg n)$ &
+      2D
+      \\
+      1973 &
+      Jarvis's March &
+      On the identification of the convex hull of a finite set of points in the plane.
+      $\bigo (nh)$  &
+      2D
+      \\
+      1977&
+      Prepata and Hong &
+      Convex Hulls of Finite sets of points in 2 or 3 dimensions. &
+      $\bigo(n\lg n)$ &
+      3D
+      \\
+      1986 &
+      Kirkpatrick and Seidel \cite{kirkpatrick}&
+      The ultimate planar convex hull algorithm? &
+      $\bigo(n\lg h)$ &
+      2D
+      \\
+      1989 &
+      Clarkson and Shor &
+      Applications of random sampling &
+      $\bigo(n\lg h)$ on average &
+      3D
+      \\
+      1991 &
+      Edelsbrumer and Shi &
+      An $\bigo(n\lg^2 h)$ algorithm for 3 dimension convex hull. &
+      $\bigo(n\lg^2 h)$ &
+      3D
+      \\
+      1995 &
+      Chan, Snoeyink and Yap \cite{chan95outputsensitive} &
+      Output sensitive construction of polytopes in four dimensions and clipped Vorono\"i diagrams in 3 dimensions. &
+      $\bigo(n\lg h)$ &
+      3D
+      \\
+      1995 &
+      Chazelle and Matou\v{s}ek &
+      Derandomizing an output sensitive convex hull algorithm in 3 dimensions. &
+      $\bigo(n\lg h)$ &
+      3D
+      \\
+      1996 &
+      Chan \cite{chan96optimal}&
+      Optimal output-sensitive convex hull algorithms in two and three dimensions &
+      $\bigo(n\lg h)$ simpler &
+      2D,3D
+      \\
+    \end{tabular}
+    \caption{Bibliography of the Convex Hull}
+    \label{tab:biblioConvexHull}
+  \end{table}
+
+There is an interesting tutorial on the convex hull  on the web: \url{http://www.cip.ifi.lmu.de/~viermetz/cg/}
+
+\end{LONG}
+
+
+Computing the convex hull is equivalent to computing the lower and
+{\em upper hull}, as one can deduce both from the convex hull, and as
+the convex hull is the union of both.
+%
+The easiest case is when the points are two
+dimensions~\cite{kirkpatrick,jarvis73,graham72}, but efficient
+output-sensitive algorithms are known for three
+dimensions~\cite{optimalOutputSensitiveConvexHullAlgorithmsInTwoAndThreeDimensions}
+and even four dimensions~\cite{DBLP:journals/dcg/ChanSY97}.
+
+
+
+\section{Planar Convex Hull}
+\label{sec:planar-convex-hull}
+
+
+\subsection{Graham's scan:  $\bigo(n\lg n)$}
+\label{sec:grahams-scan}
+
+
+Graham~\cite{graham72}'s scan algorithm computes the planar convex
+hull from a sorted set of vertices in linear time, which yields an
+$\bigo(n\lg n)$ time general algorithm, hence improving previous
+results in the worst case among instances of size $n$.
+%
+Its complexity is not sensitive to the size $h$ of the convex hull,
+but it is sensible to the order of the input when using an adaptive
+algorithm.
+
+\begin{algorithm}
+  \begin{algorithmic}
+    \STATE Test
+  \end{algorithmic}
+\end{algorithm}
+
+\subsection{Jarvis's Walk: $\bigo (nh)$}
+\label{sec:jarviss-walk}
+
+
+Jarvis~\cite{jarvis73} proposed the first non-trivial algorithm to
+compute the convex hull in the plane.
+%
+It ``wraps around'' the set, finding the next edge of the convex hull
+by comparing the slopes of the lines between the last vertex added to
+the convex hull and the remaining vertices.
+%
+According to Jarvis's original analysis it performs $\bigo(n^2)$ such
+operations in total to compute the convex hull of a set of $n$ planar
+points, but in fact its time complexity is bounded by $\bigo (nh)$,
+where $h$ is the size of the convex hull.
+
+
+
+\subsection{Kirkpatrick and Seidel's algorithm: $\bigo(n\lg h)$}
+\label{sec:kirkp-seid-algor}
+
+
+This was improved by Kirkpatrick and Seidel~\cite{kirkpatrick}, who
+proposed an algorithm computing the convex hull in $\bigo(n\lg h)$,
+introduced the concept of {\em output sensitive} complexity, and
+proved a tight lower bound on the worst case complexity among
+instances of size $n$ and ouput-size $h$.
+%
+See the very good wikipedia entry at
+\verb+http://en.wikipedia.org/wiki/Kirkpatrick%E2%80%93Seidel_algorithm+.
+
+
+\begin{adaptiveanalysis}[e]
+  \begin{tabular}{@{\bf}p{.25\textwidth}p{.75\textwidth}}
+    Problem            & {\tt Planar Convex Hull}\\               
+    Classical Approach & With Graham's scan, of complexity $\bigo(n\log n)$. \\
+    Easy Instances     & Small convex Hull, linear with Jarvis's walk.\\
+    Difficulty Measure & $h$, the size of the convex hull\\
+    Adaptive Analysis  & Jarvis's walk  performs $\bigo(nh)$ comparisons. \\
+    New Algorithm      & Kirkpatrick and Seidel's algorithm  performs $\bigo(n\log h)$. \\
+    Lower Bound        & $\Omega( n \log h)$. \\
+  \end{tabular}
+  \caption{Worst Case Adaptive Analysis of Planar Convex Hull
+    Computation}
+  \label{tab:planarConvexHull}
+\end{adaptiveanalysis}
+
+\subsection{Chan's algorithm: $\bigo(n\lg h)$, but simpler, and in $3$ dimensions}
+\label{sec:chans-algor-:big}
+
+
+Chan~\cite{optimalOutputSensitiveConvexHullAlgorithmsInTwoAndThreeDimensions}
+simplified the output-sensitive algorithm by Kirkpatrick and Seidel
+and extended it to three dimensions through a grouping method, so that
+it runs in optimal $\bigo(n\lg h)$ time.
+%
+\begin{LONG}
+  It uses a grouping trick, Dobjin-Kirkpatrick's hierachies and a
+  guessing technique from Chazelle and Matou\v{s}ek.
+\end{LONG}
+%
+The paper is online on Chan's webpage, and you can see the good
+wikipedia entry at
+\verb+http://en.wikipedia.org/wiki/Chan%27s_algorithm+.
+
+
+\begin{adaptiveanalysis}
+  \begin{tabular}{@{\bf}p{.25\textwidth}p{.75\textwidth}}
+    Problem            & {\tt 3D Convex Hull}\\               
+    Classical Approach & With Prepata and Hong's algorithm, of complexity $\bigo(n\log n)$. \\
+    Easy Instances     & Small convex Hull, linear with gift-wrapping algorithm.\\
+    Difficulty Measure & $h$, the size of the convex hull\\
+    Adaptive Analysis  & gift-wrapping algorithm  performs $\bigo(nh)$ comparisons. \\
+    New Algorithm      & Chan's algorithm  performs $\bigo(n\log h)$. \\
+    Lower Bound        & $\Omega( n \log h)$. \\
+  \end{tabular}
+  \caption{Worst Case Adaptive Analysis of 3D Convex Hull Computation}
+  \label{tab:planarConvexHull}
+\end{adaptiveanalysis}
+
+
+\subsection{Extensions in other models}
+\label{sec:extens-other-models}
+
+
+
+Goodrich~\etal~\cite{externalMemoryComputationalGeometry} presented an
+optimal output-sensitive two-dimensional convex hull algorithm, which
+makes $O(N/B \log_{M/B} H/B)$ cache misses in the external model,
+where $N$ is the number of points, $M$ is the cache size, $B$ is the
+block size, and $H$ is the number of hull vertices.
+%
+In turn, Afshani and
+Farzan~\cite{cacheObliviousOutputSensitiveTwoDimensionalConvexHull}
+generalized the result to the cache-oblivious model.
+
+
+\section{Other Output sensitive algorithms in Computational Geometry}
+\label{sec:other-outp-sens}
+
+\begin{verbatim}
+Verbatim from Almr Elmasry
+
+Nielsen \cite{n} formalized the idea of Chan's convex hull algorithm
+in a paradigm that he called grouping-and-querying.  
+%
+The idea is to break these algorithms into two stages: estimating the
+output size, and then building data structures based on that estimate
+which are queried to construct the final solution.  
+%
+Nielsen used this paradigm for computing convex hulls of objects in
+the plane \cite{n2}, maximal and convex layer decomposition \cite{n3},
+spatial point-set matching \cite{n1}. 
+%
+Another application of the paradigm is used to produce specific cells
+(by identifying the corresponding cites) of the two-dimensional
+Voronoi diagram in $O(n \log{v})$ \cite{n}, where $v$ is the output
+size.
+
+
+Another classical example is the problem of reporting the
+intersections of a set of $n$ line segments in the plane. 
+%
+Balaban gave an optimal output-sensitive algorithm that runs in $O(n\log n+s)$, where $s$ is the number of such
+intersections. 
+%
+Output-sensitive algorithms for several variants of the line-segment
+intersection problem were also introduced \cite{a,bgr,ch,em}.
+
+Bremner et al. \cite{bd} gave optimal output-sensitive algorithms for
+computing the decision boundary of a bichromatic set of points in one
+and two dimensions, by partitioning the space into regions closer to a
+red point and those closer to a blue point. 
+%
+Their algorithms run in $O(n \log{b})$, where $b$ is the number of
+points that contribute to the decision boundary.
+\end{verbatim}
+
+\begin{DISTRIBUTIONSENSITIVE}
+  Several authors considered the point location problem under various
+  assumptions about the query distribution.
+%
+  All solutions compare the expected query cost to the entropy bound
+  $H=\sum p_i \log{(1/p_i)}$, where $p_i$ is the probability that the
+  query point is contained in face $i$.
+%
+  When the distribution of the queries is given in advance, Arya et
+  al. \cite{ar} have given a linear-space data structure for point
+  location in triangulations.
+%
+  Their algorithm involves $H+O(H^{1/2}+1)$ point-line expected number
+  of comparisons.
+%
+  Recently, a data structure is presented for point location in convex
+  planar subdivisions when the distribution of the queries is given in
+  advance \cite{co}.
+%
+  Their structure has an expected query time that differs from the
+  optimal only for lower order terms in the linear-comparison tree
+  model.
+%
+  On the other hand, for spatial distributions of point location
+  queries, Iacono and Langerman \cite{il2} introduced a data structure
+  that executes a point location query quickly if it is spatially
+  close to the previous query.
+
+  Sen and Gupta \cite{sg} gave distribution-sensitive algorithms for
+  several geometric problems as the two-dimensional convex hull and
+  maximal vector problems.
+\end{DISTRIBUTIONSENSITIVE}
+
+
+
+\section{Perspective}
+\label{sec:perspective}
+
+Although a lot of efforts have been put in optimizing the algorithms
+for the convex hull and other problems in computational geometry
+beyond the traditional worst case complexity, the only measure of
+difficulty considered so far was the output size.
+%
+The complexity of the Graham's scan algorithm is trivially adaptive to
+the order of the input when using an adaptive sorting algorithm, but
+it seems superfluous that it depends as much on the relative order of
+elements \emph{not} in the convex hull than to their relative order
+with points of the convex hull: a better analysis should yield finer
+measures of difficulty.
+
+An interesting feature of the convex-hull is its similarity with the
+problem of sorting \emph{multisets} (as opposed to its reduction to
+the problem of sorting permutations). 
+%
+Adaptive analysises of the problem of sorting \emph{multisets} with
+complete order should yield adaptive analysises of the convex hull
+computation in the plane; and adaptive analysises of the problem of
+sorting \emph{multisets} with a partial order could yield adaptive
+analysises of the convex hull computation in the higher dimensions.
+
+\begin{homework}
+  \caption{Adaptive Analysis of Convex Hull}    
+  Study the adaptive analysis of the convex hull of polygonal chains
+  by Levcopoulos, Lingas and
+  Mitchell~/cite{adaptiveAlgorithmsForConstructingConvexHullsAndTriangulationsOfPolygonalChains}.
+\end{homework}
+
+
+\begin{openproblem}
+  \caption{Generalizing Sorting to Convex Hull}
+  Choose a measure of difficulty for sorting, and generalize it to the
+  convex hull. For instance, what would be a generalisation of the
+  measure \texttt{Inv}, taking into account that the inversions
+  between the points not in the convex hull does not matter, but that
+  the inversions between the points in the convex hull and between the
+  points in the convex hulls and the others do matter.
+\end{openproblem}
+
+\begin{enumerate}
+\item Input order matters:
+  \begin{itemize}
+  \item whichever the number of dimensions, the points are given in
+    sequential order;
+
+  \item Chan already remarked than discarding points improve the
+    algorithm in practice;
+
+  \item With the right order, it is trivial to obtain a linear case
+    complexity in the plane, and $dn$ in any number of dimension $d$.
+
+  \end{itemize}
+
+\item In 2D there is a link to sorting multisets with complete order.
+In 3D or higher dimensions, there might be a link to sorting with partial order.
+
+
+\item There is a large bibliography on sorting algorithms (for
+  partitions with total order) taking advantage of input order. Not
+  all results but at least some do generalize to multisets, and may
+  generalize to partial order.
+
+\end{enumerate}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "adaptiveAnalysisOfAlgorithm"
+%%% End: 
