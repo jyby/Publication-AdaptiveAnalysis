@@ -1,0 +1,258 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% LaTeX version needed:
+\NeedsTeXFormat{LaTeX2e}
+%%% Package provided:
+\ProvidesPackage{preorderMeasureNotations}
+\typeout{List of standardized notations for preorder measures.}
+
+%% Packages
+%%%  To draw 
+\RequirePackage{graphicx} %% To include graphics
+\RequirePackage{tree-dvips}   % To draw arrows, using ``\node{Na}{Aschtung}\anodeconnect[bl]{Na}[tr]{Na}''
+\RequirePackage{qtree} \qtreecenterfalse  % To draw trees, using ``\Tree [ .1 2 3 ]''.
+
+%% Commands and Environments:  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Macros from JeffreyScottVitter
+% Write multichar identifier names using \id in either mathmode or text;
+% For ex, $\id{high}(x)$ is an expression using the \id{high} function.
+% Use ``\ '' if a space is desired, as in math mode.
+\providecommand{\id}[1]{\ensuremath{\mathit{#1}}}
+\let\idit=\id
+\providecommand{\idbf}[1]{\ensuremath{\mathbf{#1}}}
+\providecommand{\idrm}[1]{\ensuremath{\mathrm{#1}}}
+\providecommand{\idtt}[1]{\ensuremath{\mathtt{#1}}}
+\providecommand{\idsf}[1]{\ensuremath{\mathsf{#1}}}
+\providecommand{\idcal}[1]{\ensuremath{\mathcal{#1}}}  % Use with capital letter args only
+
+%% Problem names
+\providecommand{\LRM}{Left-to-Right-Minima}  % the spelled-out name for LRM (taken from Sada/Gonzalo)
+\providecommand{\RMQ}{\ensuremath{\text{\sc rmq}}}
+\providecommand{\LCA}{\ensuremath{\text{\sc lca}}}
+\providecommand{\PSV}{\ensuremath{\text{\sc psv}}}
+
+%% Functions used to define measures of preorder 
+\providecommand{\entropy}{{\ensuremath\cal H}}
+\providecommand{\treeEntropy}{{\ensuremath\cal H^*}}
+\providecommand{\gap}{{\ensuremath\cal G}} % {{\ensuremath\idtt{gap}}}
+
+%% Measures of preorder For Sorting
+%%% Root of all
+\providecommand{\Reg}{{\idtt{Reg}}}
+%%% Inversions
+\providecommand{\Inv}{{\idtt{Inv}}}
+\providecommand{\nInv}{{\idtt{nInv}}}
+%%% REM
+\providecommand{\Rem}{\mathtt{Rem}}
+\providecommand{\nRem}{\mathtt{nRem}}
+%%% EXChanges
+\providecommand{\Exc}{\mathtt{Exc}}
+\providecommand{\nExc}{\mathtt{nExc}}
+%%% Block
+\providecommand{\Block}{\mathtt{Block}}
+\providecommand{\nBlock}{\mathtt{nBlock}}
+\providecommand{\vBlock}{\mathtt{vBlock}}
+\providecommand{\hBlock}{\ensuremath\entropy(\vBlock)}
+%%% Runs 
+\providecommand{\Runs}{\ensuremath\mathtt{Runs}}
+\providecommand{\vRuns}{\ensuremath\mathtt{vRuns}}
+\providecommand{\nRuns}{\ensuremath\mathtt{nRuns}}
+\providecommand{\hRuns}{\ensuremath\entropy(\vRuns)}
+%%% Strict Runs
+\providecommand{\SRuns}{\ensuremath\mathtt{SRuns}}
+\providecommand{\vSRuns}{\ensuremath\mathtt{vSRuns}}
+\providecommand{\nSRuns}{\ensuremath\mathtt{nSRuns}}
+\providecommand{\hSRuns}{\ensuremath\entropy(\vSRuns)}
+%%% LRM
+\providecommand{\LRM}{\ensuremath\mathtt{LRM}}
+\providecommand{\vLRM}{\ensuremath\mathtt{vLRM}}
+\providecommand{\nLRM}{\ensuremath\mathtt{nLRM}}
+\providecommand{\hLRM}{\ensuremath\entropy(\vLRM)}
+%%% Shuffled Monotone Subsequences
+\providecommand{\SMS}{\ensuremath\mathtt{SMS}}
+\providecommand{\vSMS}{\ensuremath\mathtt{vSMS}}
+\providecommand{\nSMS}{\ensuremath\mathtt{nSMS}}
+\providecommand{\hSMS}{\ensuremath\entropy(\vSMS)}
+%%% Strict Shuffled Monotone Subsequences
+\providecommand{\SSMS}{\ensuremath\mathtt{SMS}}
+\providecommand{\vSSMS}{\ensuremath\mathtt{vSSMS}}
+\providecommand{\nSSMS}{\ensuremath\mathtt{nSSMS}}
+\providecommand{\hSSMS}{\ensuremath\entropy(\vSSMS)}
+% Shuffled Up Sequences
+\providecommand{\SUS}{\ensuremath\mathtt{SUS}}
+\providecommand{\vSUS}{\ensuremath\mathtt{vSUS}}
+\providecommand{\nSUS}{\ensuremath\mathtt{nSUS}}
+\providecommand{\hSUS}{\ensuremath\entropy(\vSUS)}
+%%% Encroached
+\providecommand{\Enc}{\ensuremath\mathtt{Enc}}
+\providecommand{\nEnc}{\ensuremath\epsilon}
+%%% Others
+\providecommand{\Split}{\mathtt{Split}}
+\providecommand{\Dis}{\mathtt{Dis}}
+\providecommand{\Max}{\mathtt{Max}}
+\providecommand{\Osc}{\mathtt{Osc}}
+\providecommand{\Hist}{\mathtt{Hist}}
+\providecommand{\DS}{\mathtt{DS}}
+\providecommand{\Max}{\mathtt{Max}}
+\providecommand{\Par}{\mathtt{Par}}
+\providecommand{\Ham}{\mathtt{Ham}}
+\providecommand{\Loc}{\mathtt{Loc}}
+
+
+
+%% Graphical representations of the bibliography on preorder measures
+\providecommand{\partialOrderOnPreorderMeasures}{
+  \begin{tabular}{*{10}{c}}
+    & \node{hist}{$\Hist$} 
+    & \node{nblock}{$\nBlock$}
+%    &
+    & \node{rem}{$\nRem$}
+    & \node{exc}{$\Exc=\Ham$} 
+    \\ \\
+    \node{reg}{$\Reg$} 
+    & \node{loc}{$\Loc$} 
+    & \node{osc}{$\Osc$}  
+%    &
+    & \node{inv}{$\nInv{=}\DS$}
+    & \node{max}{$\Max{=}\Par$}
+    \\ \\ 
+    & \node{nsms}{$\nSMS$} 
+    & \node{enc}{$\Enc$}
+%    &
+    & \node{nsus}{$\nSUS$}
+    & \node{nruns}{$\nRuns$}
+    & \node{nsruns}{$\nSRuns$}  % 2009-Barbay and Navarro
+    \\ \\ 
+    \node{hsms}{$\hSMS$}        % 2009-Barbay and Navarro
+%    &
+    & \node{hsus}{$\hSUS$}      % 2009-Barbay and Navarro
+    & \node{hlrm}{$\hLRM$}      % 2011-Barbay, Fischer and Navarro
+    & \node{hruns}{$\hRuns$}    % 2009-Barbay and Navarro
+    & \node{hsruns}{$\hSRuns$}  % 2009-Barbay and Navarro
+  \end{tabular}
+
+  % Those reductions to be checked:
+  % \anodeconnect[r]{split}[l]{inv}  %\anodeconnect[l]{split}[r]{rem}
+  \anodeconnect[r]{reg}[l]{hist}       % copied from 1992-Moffat and Petersson
+  \anodeconnect[r]{hist}[l]{nblock}    % copied from 1992-Moffat and Petersson
+  \anodeconnect[r]{nblock}[l]{rem}     % copied from 1992-Moffat and Petersson
+  \anodeconnect[r]{rem}[l]{exc}        % copied from 1992-Moffat and Petersson
+  \anodeconnect[r]{reg}[l]{loc}        % copied from 1992-Moffat and Petersson
+  \anodeconnect[r]{loc}[l]{osc}        % copied from 1992-Moffat and Petersson
+  \anodeconnect[r]{osc}[l]{inv}        % copied from 1992-Moffat and Petersson
+  \anodeconnect[r]{inv}[l]{max}        % copied from 1992-Moffat and Petersson
+  \anodeconnect[r]{reg}[tl]{nsms}      % copied from 1992-Moffat and Petersson
+  \anodeconnect[r]{nsms}[l]{enc}       % copied from 1992-Moffat and Petersson
+  \anodeconnect[r]{enc}[l]{nsus}       % copied from 1992-Moffat and Petersson
+  \anodeconnect[r]{nsus}[l]{nruns}     % copied from 1992-Moffat and Petersson
+  \anodeconnect[r]{nruns}[l]{nsruns}   % proved in 2009-Barbay and Navarro
+  \anodeconnect[r]{hsms}[l]{hsus}      % proved in 2009-Barbay and Navarro
+  \anodeconnect[r]{hsus}[l]{hlrm}      % proved in 2011-Barbay, Fischer and Navarro
+  \anodeconnect[r]{hlrm}[l]{hruns}     % proved in 2011-Barbay, Fischer and Navarro
+  \anodeconnect[r]{hruns}[l]{hsruns}   % proved in 2009-Barbay and Navarro
+  \anodeconnect[r]{loc}[bl]{nblock}    % copied from 1992-Moffat and Petersson
+  \anodeconnect[r]{hist}[tl]{inv}      % copied from 1992-Moffat and Petersson
+  \anodeconnect[r]{osc}[tl]{nruns}     % copied from 1992-Moffat and Petersson
+  \anodeconnect[r]{nsus}[bl]{max}      % copied from 1992-Moffat and Petersson
+  \anodeconnect[r]{hsms}[bl]{nsms}     % proved in 2009-Barbay and Navarro
+  \anodeconnect[r]{hsus}[bl]{nsus}     % proved in 2009-Barbay and Navarro
+  \anodeconnect[r]{hruns}[bl]{nruns}   % proved in 2009-Barbay and Navarro
+  \anodeconnect[r]{hsruns}[bl]{nsruns} % proved in 2009-Barbay and Navarro
+}
+
+\providecommand{\treeOfPreoderMeasures}{
+  \Tree 
+  [ .\node{reg}{$\Reg$}  
+    [ .\node{split}{$\Split$}   
+      [ .\node{rem}{$\nRem$}
+        \node{exc}{$\Exc$}
+      ]
+   ] 
+    [ .\node{osc}{$\Osc$} 
+      [ .\node{inv}{$\nInv$}
+        \node{dismax}{$\Dis{=}\Max$}
+      ]
+    ]
+    [ .\node{nsms}{$\nSMS$}
+      [ .\node{enc}{$\Enc$}
+        [ .\node{nsus}{$\nSUS$}
+          [ .\node{nruns}{$\nRuns$}
+            \node{nsruns}{$\nSRuns$}
+          ]
+        ]
+      ]
+    ]
+    [ .\node{hsms}{$\hSMS$}
+       [ .\node{hsus}{$\hSUS$}
+          [ .\node{hlrm}{$\hLRM$}
+            [ .\node{hruns}{$\hRuns$}
+              \node{hsruns}{$\hSRuns$}
+            ]
+          ] 
+       ]
+    ]
+  ]        
+  % Those reductions to be checked:
+  \anodeconnect[r]{split}[l]{inv}
+  %\anodeconnect[l]{split}[r]{rem}
+  % Those reductions copied from Estivil Castro and Wood
+  \anodeconnect[br]{osc}[tl]{nruns}
+  \anodeconnect[l]{nsus}[r]{dismax}
+  % Those reductions from our paper (STACS09 and journal version)
+  \anodeconnect[l]{hsms}[r]{nsms}
+  \anodeconnect[l]{hsus}[r]{nsus}
+  \anodeconnect[l]{hruns}[r]{nruns}
+  \anodeconnect[l]{hsruns}[r]{nsruns}
+}
+\providecommand{\arrayOfResultsByPreorderMeasure}{
+  \begin{tabular}{l|c|c|c|c|c|l|}
+    Measure                   & LB   & UB   & UB   & Rank & Select & Ref                              \\ 
+                              & cmps & cmps & time & time & time   &                                  \\ \hline
+    \node{reg}{$\Reg$}        &      &      &      &      &        &                                  \\
+    \node{hist}{$\Hist$}      &      &      &      &      &        &                                  \\
+    \node{nblock}{$\nBlock$}  &      &      &      &      &        &                                  \\
+    \node{rem}{$\nRem$}        &      &      &      &      &        &                                  \\
+    \node{exc}{$\Exc=\Ham$}   &      &      &      &      &        &                                  \\
+    \hline
+    \node{loc}{$\Loc$}        &      &      &      &      &        &                                  \\
+    \node{osc}{$\Osc$}        &      &      &      &      &        &                                  \\
+    \node{inv}{$\nInv{=}\DS$}  &      &      &      &      &        &                                  \\
+    \node{max}{$\Max{=}\Par$} &      &      &      &      &        &                                  \\
+    \hline
+    \node{nsms}{$\nSMS$}      &      &      &      &      &        &                                  \\
+    \node{enc}{$\Enc$}        &      &      &      &      &        &                                  \\
+    \node{nsus}{$\nSUS$}      &      &      &      &      &        &                                  \\
+    \node{nruns}{$\nRuns$}    &      &      &      &      &        &                                  \\
+    \node{nsruns}{$\nSRuns$}  &      &      &      &      &        & 2009-Barbay and Navarro          \\
+    \hline
+    \node{hsms}{$\hSMS$}      &      &      &      &      &        & 2009-Barbay and Navarro          \\
+    \node{hsus}{$\hSUS$}      &      &      &      &      &        & 2009-Barbay and Navarro          \\
+    \node{hlrm}{$\hLRM$}      &      &      &      &      &        & 2011-Barbay, Fischer and Navarro \\
+    \node{hruns}{$\hRuns$}    &      &      &      &      &        & 2009-Barbay and Navarro          \\
+    \node{hsruns}{$\hSRuns$}  &      &      &      &      &        & 2009-Barbay and Navarro          \\ \hline
+  \end{tabular}
+  % \anodeconnect[bl]{reg}[tl]{hist}       % copied from 1992-Moffat and Petersson
+  % \anodeconnect[bl]{hist}[tl]{nblock}   % copied from 1992-Moffat and Petersson
+  % \anodeconnect[bl]{nblock}[tl]{rem}    % copied from 1992-Moffat and Petersson
+  % \anodeconnect[bl]{rem}[tl]{exc}       % copied from 1992-Moffat and Petersson
+  % \anodeconnect[bl]{loc}[tl]{osc}       % copied from 1992-Moffat and Petersson
+  % \anodeconnect[bl]{osc}[tl]{inv}       % copied from 1992-Moffat and Petersson
+  % \anodeconnect[bl]{inv}[tl]{max}       % copied from 1992-Moffat and Petersson
+  % \anodeconnect[bl]{nsms}[tl]{enc}      % copied from 1992-Moffat and Petersson
+  % \anodeconnect[bl]{enc}[tl]{nsus}      % copied from 1992-Moffat and Petersson
+  % \anodeconnect[bl]{nsus}[tl]{nruns}    % copied from 1992-Moffat and Petersson
+  % \anodeconnect[bl]{nruns}[tl]{nsruns}  % proved in 2009-Barbay and Navarro
+  % \anodeconnect[bl]{hsms}[tl]{hsus}     % proved in 2009-Barbay and Navarro
+  % \anodeconnect[bl]{hsus}[tl]{hlrm}     % proved in 2011-Barbay, Fischer and Navarro
+  % \anodeconnect[bl]{hlrm}[tl]{hruns}    % proved in 2011-Barbay, Fischer and Navarro
+  % \anodeconnect[bl]{hruns}[tl]{hsruns}  % proved in 2009-Barbay and Navarro
+  \anodecurve[l]{reg}[l]{loc}{.3in}       % copied from 1992-Moffat and Petersson
+  \anodecurve[l]{reg}[l]{nsms}{.5in}     % copied from 1992-Moffat and Petersson
+  \anodecurve[tl]{loc}[l]{nblock}{.3in}   % copied from 1992-Moffat and Petersson
+  \anodecurve[l]{hist}[l]{inv}{.5in}     % copied from 1992-Moffat and Petersson
+  \anodecurve[l]{osc}[tl]{nruns}{.5in}    % copied from 1992-Moffat and Petersson
+  \anodecurve[tl]{nsus}[l]{max}{.3in}     % copied from 1992-Moffat and Petersson
+  \anodecurve[l]{hsms}[bl]{nsms}{.5in}    % proved in 2009-Barbay and Navarro
+  \anodecurve[l]{hsus}[l]{nsus}{.5in}    % proved in 2009-Barbay and Navarro
+  \anodecurve[l]{hruns}[l]{nruns}{.5in}  % proved in 2009-Barbay and Navarro
+  \anodecurve[l]{hsruns}[l]{nsruns}{.5in} % proved in 2009-Barbay and Navarro
+}
